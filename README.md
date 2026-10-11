@@ -1,17 +1,27 @@
-# sf
+mfy — Flutter Music Player
 
-A new Flutter project.
+mfy is a Spotify-inspired music streaming application built with Flutter, designed to provide a modern music-listening experience with a clean interface and smooth playback.
 
-## Getting Started
+Features
+🎵 Music discovery and streaming
+▶️ Play and pause music
+🎧 Dedicated music player interface
+❤️ Like and save favorite songs
+📂 Create and manage playlists
+🕘 Recently played songs
+📈 Most-played song tracking
+🎨 Modern dark-themed interface
+💾 Local data persistence using Hive
+🎼 Background audio playback and media controls
+📱 Android APK build support
 
-This project is a starting point for a Flutter application.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Download:
+Download the latest Android APK from the Releases section of this GitHub repository.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Version:
+Current Release: v1.0.0
+
+Disclaimer:
+mfy is an independent music player project inspired by modern music streaming applications. It is not affiliated with, endorsed by, or associated with Spotify.
