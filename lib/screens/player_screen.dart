@@ -95,7 +95,7 @@ class _PlayerScreenState extends State<PlayerScreen>
         ],
       ),
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 700),
+        duration: const Duration(milliseconds: 450),
         curve: Curves.easeInOut,
         height: double.infinity,
         width: double.infinity,
