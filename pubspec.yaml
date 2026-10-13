@@ -52,8 +52,11 @@ dependencies:
 
   live_activities:
 
-  youtube_explode_dart: 
+  youtube_explode_dart:
+    path: packages/youtube_explode_dart
 
+
+  permission_handler: 
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -67,6 +70,8 @@ dev_dependencies:
 
   flutter_launcher_icons:
   flutter_native_splash:
+
+  
 
 flutter_launcher_icons:
   android: true

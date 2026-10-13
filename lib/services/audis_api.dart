@@ -25,7 +25,7 @@ class AudisApi {
   //basically i will add the category of songs choosen in the query section fro discover something new section for testing i added punjabi
   Future<List<TrackModel>> getLatestTracks() async {
     log("Get latest songs called");
-    final url = Uri.parse('$baseUrl/tracks/search?query=punjabi&limit=20');
+    final url = Uri.parse('$baseUrl/tracks/search?query=indian&limit=20');
     final response = await http.get(url);
 
     if (response.statusCode != 200) {

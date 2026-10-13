@@ -11,8 +11,6 @@ import 'package:sf/models/track_model.dart';
 import 'package:sf/services/youtube_services.dart';
 
 class TrackProvider extends ChangeNotifier {
-  // The handler owns the real player, so the notification, lock screen
-  // and in-app controls all control the same thing.
   final MyAudioHandler handler;
   AudioPlayer get player => handler.player;
 
@@ -27,183 +25,90 @@ class TrackProvider extends ChangeNotifier {
   final Box playlistBox = Hive.box("playlistBox");
   final Box mostPlayedBox = Hive.box("mostPlayedBox");
 
+  final YoutubeServices _ytService = YoutubeServices();
+  int _playToken = 0;
+
   TrackProvider(this.handler) {
     player.playingStream.listen((playing) {
+      if (_playToken == 0) return; // ignore initial
       isPlaying = playing;
       notifyListeners();
     });
   }
 
-  // DEBUG ONLY: clears the box. Never call this in release builds.
-  Future<void> addTemporaryMostPlayedData() async {
-    await mostPlayedBox.clear();
+  bool _isYoutubeId(String id) => RegExp(r'^[A-Za-z0-9_-]{11}$').hasMatch(id);
 
-
-
-
-    await mostPlayedBox.put('song1', {
-      'id': 'song1',
-      'title': 'Blinding Lights',
-      'artist': 'The Weeknd',
-      'duration': 200,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?1',
-      'streamUrl': 'https://example.com/song1.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song2', {
-      'id': 'song2',
-      'title': 'Starboy',
-      'artist': 'The Weeknd',
-      'duration': 230,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?2',
-      'streamUrl': 'https://example.com/song2.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song3', {
-      'id': 'song3',
-      'title': 'Shape of You',
-      'artist': 'Ed Sheeran',
-      'duration': 234,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?3',
-      'streamUrl': 'https://example.com/song3.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song4', {
-      'id': 'song4',
-      'title': 'Perfect',
-      'artist': 'Ed Sheeran',
-      'duration': 263,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?4',
-      'streamUrl': 'https://example.com/song4.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song5', {
-      'id': 'song5',
-      'title': 'Believer',
-      'artist': 'Imagine Dragons',
-      'duration': 204,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?5',
-      'streamUrl': 'https://example.com/song5.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song6', {
-      'id': 'song6',
-      'title': 'Thunder',
-      'artist': 'Imagine Dragons',
-      'duration': 187,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?6',
-      'streamUrl': 'https://example.com/song6.mp3',
-      'playCount': 1,
-    });
-
-    await mostPlayedBox.put('song7', {
-      'id': 'song7',
-      'title': 'OK',
-      'artist': 'The Weeknd',
-      'duration': 200,
-      'is_streamable': 'true',
-      'artwork': 'https://picsum.photos/300?1',
-      'streamUrl': 'https://example.com/song1.mp3',
-      'playCount': 2,
-    });
-
-    notifyListeners();
-  }
-
+  // --- CORE: AUDIO ONLY ---
   Future<void> setSongAndPlay(TrackModel song) async {
-    try {
-      currentSong = song;
-      notifyListeners();
+    final token = ++_playToken;
+    currentSong = song;
+    isPlaying = false;
+    notifyListeners();
 
-      // Feeds the notification, lock screen and Dynamic Island.
+    try {
+      // 1. Update lockscreen / notification instantly
       handler.mediaItem.add(
         MediaItem(
           id: song.id.toString(),
-          title: song.title.toString(),
-          artist: song.artist.toString(),
-          artUri: Uri.tryParse('${song.artwork ?? ''}'),
-          duration: Duration(
-            seconds: int.tryParse(song.duration.toString()) ?? 0,
-          ),
+          title: song.title,
+          artist: song.artist,
+          artUri: Uri.tryParse(song.artwork ?? ''),
+          duration: Duration(seconds: int.tryParse('${song.duration}') ?? 0),
         ),
       );
 
       await saveRecentSongs(song);
+      if (token != _playToken) return; // new tap came
 
-      // First try the URL we already have.
-      // String? url = song.streamUrl;
-
-      // if (url == null || url.isEmpty) {
-      //   throw Exception("Stream URL is empty");
-      // }
-
-      try {
-        //   // Fast path
-        //   await player.setUrl(url);
-        //   await player.play();
-
-        //   isPlaying = true;
-        //   notifyListeners();
-        // } catch (e) {
-        log("Getting fresh URL...");
-
-        // URL may have expired -> get a new signed URL
-        final freshUrl = await AudisApi().getFreshStreamUrl(song.id);
-
-        final yt=YoutubeServices();
-
-        final videos=await yt.searchFromYoutube(song.title);
-        final urlFromYt= await YoutubeServices().getAudioUrl(videos.first.id.value);
-        log("Playing from yt : ${videos.first.title}");
-
-        await player.setUrl(urlFromYt);
-        await player.play();
-
+      if (_isYoutubeId(song.id)) {
+        log('YT AUDIO: ${song.id} - ${song.title}');
+        // This MUST do: get manifest -> audioOnly -> setAudioSource -> play
+        await _ytService.getAudioStream(
+          song.id,
+          player,
+          forceRefresh: true, // always fresh url, yt urls expire in ~6hr
+        );
         isPlaying = true;
         notifyListeners();
-        // Only count after successful playback
+      } else {
+        log('AUDIUS AUDIO: ${song.id}');
+        final freshUrl = await AudisApi().getFreshStreamUrl(song.id);
+        if (token != _playToken) return;
+        await player.setUrl(freshUrl);
+        await player.play();
+        isPlaying = true;
+        notifyListeners();
+      }
+
+      if (token != _playToken) return;
+
+      // 2. Only count after actual play started
+      if (player.playing) {
         await recordSongPlayedCount(song);
-      } catch (e) {
-        log("$e");
       }
     } catch (e, st) {
-      log("PLAY ERROR: $e");
-      log("$st");
-
-      isPlaying = false;
-      notifyListeners();
+      log('PLAY ERROR: $e\n$st');
+      if (token == _playToken) {
+        isPlaying = false;
+        currentSong = null;
+        notifyListeners();
+      }
     }
   }
 
   Future<void> pause() async {
-    isPlaying = false;
-    notifyListeners();
     await handler.pause();
   }
 
   Future<void> resume() async {
-    isPlaying = true;
-    notifyListeners();
     await handler.play();
   }
 
   Future<void> stop() async {
-    isPlaying = false;
-    notifyListeners();
     await handler.stop();
   }
 
+  // --- REST UNCHANGED ---
   Future<void> saveRecentSongs(TrackModel song) async {
     await recentBox.delete(song.id);
     await recentBox.put(song.id, {
@@ -219,12 +124,10 @@ class TrackProvider extends ChangeNotifier {
   }
 
   Future<void> recordSongPlayedCount(TrackModel song) async {
-    // Fixed: the box stores a Map, not an int, so read playCount from it.
     final existing = mostPlayedBox.get(song.id);
     final currentCount = existing == null
         ? 0
         : (existing['playCount'] as int? ?? 0);
-
     await mostPlayedBox.put(song.id, {
       'id': song.id,
       'title': song.title,
@@ -235,62 +138,51 @@ class TrackProvider extends ChangeNotifier {
       'streamUrl': song.streamUrl,
       'playCount': currentCount + 1,
     });
-
     notifyListeners();
   }
 
   Future<void> fetchTrendingSongs() async {
     try {
       trendingSongsList = await AudisApi().getTrendingTracks();
-
       notifyListeners();
     } catch (e) {
-      print("Error fetching trending songs: $e");
+      log("Error fetching trending: $e");
     }
   }
 
-  List<TrackModel> trendingSongs() {
-    return trendingSongsList;
-  }
+  List<TrackModel> trendingSongs() => trendingSongsList;
 
   Future<void> fetchLatestSongs() async {
     try {
       latestSongsList = await AudisApi().getLatestTracks();
-
       notifyListeners();
     } catch (e) {
-      print("Error fetching trending songs: $e");
+      log("Error fetching latest: $e");
     }
   }
 
-  List<TrackModel> LatestSongs() {
-    return latestSongsList;
-  }
+  List<TrackModel> LatestSongs() => latestSongsList;
 
   List<Map> mostPlayedSong() {
     final songs = mostPlayedBox.values
-        .map((song) => Map<String, dynamic>.from(song))
+        .map((s) => Map<String, dynamic>.from(s))
         .toList();
-
     songs.sort(
       (a, b) => (b['playCount'] as int).compareTo(a['playCount'] as int),
     );
-
     return songs.take(7).toList();
   }
 
   List<Map> recentSongs() {
     final songs = recentBox.values
-        .map((song) => Map<String, dynamic>.from(song))
+        .map((s) => Map<String, dynamic>.from(s))
         .toList();
-
     songs.sort((a, b) => b['playedAt'].compareTo(a['playedAt']));
-
     return songs;
   }
 
-  Future<void> removeRecentSong(String songID) async {
-    await recentBox.delete(songID);
+  Future<void> removeRecentSong(String id) async {
+    await recentBox.delete(id);
     notifyListeners();
   }
 
@@ -309,25 +201,17 @@ class TrackProvider extends ChangeNotifier {
       'artwork': song.artwork,
       'streamUrl': song.streamUrl,
     });
-
-    // Added: refresh the UI after liking a song.
     notifyListeners();
   }
 
-  List<Map> likedSongs() {
-    final songs = likedBox.values
-        .map((song) => Map<String, dynamic>.from(song))
-        .toList();
+  List<Map> likedSongs() =>
+      likedBox.values.map((s) => Map<String, dynamic>.from(s)).toList();
 
-    return songs;
-  }
-
-  Future<void> removeLikedSong(String songID) async {
-    await likedBox.delete(songID);
+  Future<void> removeLikedSong(String id) async {
+    await likedBox.delete(id);
     notifyListeners();
   }
 
-  // Playlist creation and adding songs into it
   Future<void> createPlaylist(String pname) async {
     await playlistBox.put(pname, []);
     notifyListeners();
@@ -339,11 +223,10 @@ class TrackProvider extends ChangeNotifier {
   }
 
   Future<void> addToPlaylist(String pname, TrackModel tm) async {
-    final playlist = playlistBox.get(pname, defaultValue: <Map>[]);
-
-    final existingPlaylist = List<Map>.from(playlist);
-
-    existingPlaylist.add({
+    final existing = List<Map>.from(
+      playlistBox.get(pname, defaultValue: <Map>[]),
+    );
+    existing.add({
       'id': tm.id,
       'title': tm.title,
       'artist': tm.artist,
@@ -352,39 +235,42 @@ class TrackProvider extends ChangeNotifier {
       'artwork': tm.artwork,
       'streamUrl': tm.streamUrl,
     });
-
-    await playlistBox.put(pname, existingPlaylist);
-
+    await playlistBox.put(pname, existing);
     notifyListeners();
   }
 
   Future<void> removeFromPlaylist(String pname, String songID) async {
-    final stored = playlistBox.get(pname, defaultValue: <Map>[]);
-
-    if (stored == null) return;
-
-    // Copy into a fresh typed list before modifying.
-    final existingPlaylist = List<Map>.from(stored);
-    existingPlaylist.removeWhere((song) => song['id'] == songID);
-
-    await playlistBox.put(pname, existingPlaylist);
-
+    final existing = List<Map>.from(
+      playlistBox.get(pname, defaultValue: <Map>[]),
+    );
+    existing.removeWhere((s) => s['id'] == songID);
+    await playlistBox.put(pname, existing);
     notifyListeners();
   }
 
-  List<String> allplaylistsName() {
-    final playlist = playlistBox.keys.cast<String>().toList();
+  List<String> allplaylistsName() => playlistBox.keys.cast<String>().toList();
+  List<Map> songsOfPlaylist(String pname) =>
+      List<Map>.from(playlistBox.get(pname, defaultValue: <Map>[]));
 
-    return playlist;
-  }
-
-  List<Map> songsOfPlaylist(String pname) {
-    return List<Map>.from(playlistBox.get(pname, defaultValue: <Map>[]));
+  Future<void> addTemporaryMostPlayedData() async {
+    await mostPlayedBox.clear();
+    for (int i = 1; i <= 7; i++) {
+      await mostPlayedBox.put('song$i', {
+        'id': 'song$i',
+        'title': 'Test Song $i',
+        'artist': 'Artist $i',
+        'duration': 200,
+        'is_streamable': 'true',
+        'artwork': 'https://picsum.photos/300?$i',
+        'streamUrl': 'https://example.com/song$i.mp3',
+        'playCount': i == 7 ? 2 : 1,
+      });
+    }
+    notifyListeners();
   }
 
   @override
   void dispose() {
-    // The handler owns the player, so don't dispose it here.
     super.dispose();
   }
 }

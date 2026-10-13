@@ -150,6 +150,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       ),
                       const SizedBox(width: 8),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Text(
@@ -164,8 +165,19 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               fontWeight: FontWeight.w700,
                             ),
                           ),
+                          Text(
+                            widget.song.artist,
+
+                            maxLines: 1,
+                            overflow: TextOverflow.fade,
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 11.7,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                           // Text(widget.song.artist),
-                          const SizedBox(height: 8),
+                          // const SizedBox(height: 8),
                         ],
                       ),
                     ],
