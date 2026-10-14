@@ -708,9 +708,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
               ),
             ),
             subtitle: Text(
-              dur.isEmpty
-                  ? searchContent.artist
-                  : "${searchContent.artist} • $dur",
+              "${searchContent.artist}",
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(color: Colors.grey),

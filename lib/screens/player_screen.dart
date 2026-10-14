@@ -189,9 +189,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                           Icon(
                             Icons.close_rounded,
                             color: Colors.white,
-                            size: 40,
+                            size: 30,
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 11),
 
                           GestureDetector(
                             onTap: () async {
@@ -210,14 +210,14 @@ class _PlayerScreenState extends State<PlayerScreen>
                                 ? Lottie.asset(
                                     'assets/animations/Done.json',
 
-                                    width: 50,
-                                    height: 50,
+                                    width: 37.5,
+                                    height: 37.5,
                                     repeat: false,
                                   )
                                 : const Icon(
                                     Icons.add_circle_outline_rounded,
                                     color: Colors.white,
-                                    size: 37,
+                                    size: 33,
                                   ),
                           ),
                         ],
