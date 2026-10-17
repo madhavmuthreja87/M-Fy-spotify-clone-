@@ -29,26 +29,34 @@ class MiniPlayer extends StatefulWidget {
 class _MiniPlayerState extends State<MiniPlayer> {
   Color backgroundColor = const Color(0xFF212121);
 
-  Future<void> getBackgroundColor() async {
-    final palette = await PaletteGenerator.fromImageProvider(
-      NetworkImage(widget.song.artwork!),
-    );
-    Color selectedColor = Colors.blueGrey;
+  Future<void> getBackgroundColor(String? artwork) async {
+    if (artwork == null || artwork.isEmpty) return;
 
-    final colors = palette.colors.toList();
+    try {
+      final palette = await PaletteGenerator.fromImageProvider(
+        NetworkImage(artwork),
+        maximumColorCount: 24,
+      );
 
-    for (final color in colors) {
-      final lightness = HSLColor.fromColor(color).lightness;
+      final selectedColor =
+          palette.vibrantColor?.color ??
+          palette.darkVibrantColor?.color ??
+          palette.mutedColor?.color ??
+          palette.dominantColor?.color ??
+          const Color(0xFF191414);
 
-      if (lightness > 0.25) {
-        selectedColor = color;
-        break;
-      }
+      if (!mounted) return;
+
+      setState(() {
+        backgroundColor = selectedColor;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        backgroundColor = const Color(0xFF191414);
+      });
     }
-
-    setState(() {
-      backgroundColor = selectedColor;
-    });
   }
 
   @override
@@ -56,7 +64,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     // TODO: implement initState
     super.initState();
 
-    getBackgroundColor();
+    getBackgroundColor(widget.song.artwork);
   }
 
   @override
@@ -64,7 +72,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.song.id != widget.song.id) {
-      getBackgroundColor();
+      getBackgroundColor(context.read<TrackProvider>().currentSong!.artwork);
     }
   }
 
@@ -102,7 +110,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
         );
       },
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
+        duration: const Duration(milliseconds: 10),
         curve: Curves.easeInOut,
         height: 54,
         width: MediaQuery.sizeOf(context).width / 1.09,

@@ -44,18 +44,26 @@ class TrackProvider extends ChangeNotifier {
 
   void clearQueue() {
     queue.clear();
+    currentQueueIndex = -1;
     notifyListeners();
   }
 
+  int currentQueueIndex = -1;
+
   Future<void> playNextInQueue() async {
-    if (_queue.isEmpty) {
-      return;
-    }
+    if (_queue.isEmpty) return;
 
-    final nextSong = _queue.removeAt(0);
-    notifyListeners();
+    if (currentQueueIndex >= _queue.length - 1) return;
 
-    setSongAndPlay(nextSong);
+    currentQueueIndex++;
+    await setSongAndPlay(_queue[currentQueueIndex]);
+  }
+
+  Future<void> playPreviousInQueue() async {
+    if (_queue.isEmpty || currentQueueIndex <= 0) return;
+
+    currentQueueIndex--;
+    await setSongAndPlay(_queue[currentQueueIndex]);
   }
 
   TrackProvider(this.handler) {

@@ -31,25 +31,33 @@ class _PlayerScreenState extends State<PlayerScreen>
   Color backgroundColor = Colors.black;
 
   Future<void> getBackgroundColor(String? artwork) async {
-    final palette = await PaletteGenerator.fromImageProvider(
-      NetworkImage(artwork!),
-    );
-    Color selectedColor = Colors.blueGrey;
+    if (artwork == null || artwork.isEmpty) return;
 
-    final colors = palette.colors.toList();
+    try {
+      final palette = await PaletteGenerator.fromImageProvider(
+        NetworkImage(artwork),
+        maximumColorCount: 24,
+      );
 
-    for (final color in colors) {
-      final lightness = HSLColor.fromColor(color).lightness;
+      final selectedColor =
+          palette.vibrantColor?.color ??
+          palette.darkVibrantColor?.color ??
+          palette.mutedColor?.color ??
+          palette.dominantColor?.color ??
+          const Color(0xFF191414);
 
-      if (lightness > 0.25) {
-        selectedColor = color;
-        break;
-      }
+      if (!mounted) return;
+
+      setState(() {
+        backgroundColor = selectedColor;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        backgroundColor = const Color(0xFF191414);
+      });
     }
-
-    setState(() {
-      backgroundColor = selectedColor;
-    });
   }
 
   @override
@@ -110,46 +118,56 @@ class _PlayerScreenState extends State<PlayerScreen>
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [backgroundColor, Colors.black],
+            colors: [
+              backgroundColor,
+              Color.lerp(backgroundColor, const Color(0xFF191414), 0.65)!,
+              const Color(0xFF000000),
+            ],
+            stops: const [0.0, 0.55, 1.0],
           ),
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
-                  Card(
-                    elevation: 22,
-                    shadowColor: Colors.black,
-                    borderOnForeground: true,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      // child: Image.network(
-                      //   widget.song.artwork!,
-                      //   fit: BoxFit.cover,
-                      //   height: 320,
-                      //   width: 340,
-                      // ),
-                      child: CachedNetworkImage(
-                        imageUrl: currentSong!.artwork!,
-                        fit: BoxFit.cover,
-                        height: 320,
-                        width: 340,
-                        errorWidget: (context, url, error) => Container(
-                          color: const Color.fromARGB(225, 160, 160, 160),
-                          child: const Center(
-                            child: Icon(
-                              Icons.music_note,
-                              size: 110,
-                              color: Colors.white,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Card(
+                        elevation: 22,
+                        shadowColor: Colors.black,
+                        borderOnForeground: true,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          // child: Image.network(
+                          //   widget.song.artwork!,
+                          //   fit: BoxFit.cover,
+                          //   height: 320,
+                          //   width: 340,
+                          // ),
+                          child: CachedNetworkImage(
+                            imageUrl: currentSong!.artwork!,
+                            fit: BoxFit.cover,
+                            height: MediaQuery.sizeOf(context).height / 2.5,
+                            width: MediaQuery.sizeOf(context).width / 1.2,
+                            errorWidget: (context, url, error) => Container(
+                              color: const Color.fromARGB(225, 160, 160, 160),
+                              child: const Center(
+                                child: Icon(
+                                  Icons.music_note,
+                                  size: 110,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
 
                   const SizedBox(height: 20),
@@ -180,7 +198,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                currentSong.artist.substring(0, 5),
+                                currentSong.artist.length > 20
+                                    ? currentSong.artist.substring(0, 20) +
+                                          "..."
+                                    : currentSong.artist,
+                                maxLines: 1,
+
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 16,
@@ -321,10 +344,15 @@ class _PlayerScreenState extends State<PlayerScreen>
 
                       Row(
                         children: [
-                          Icon(
-                            Icons.skip_previous_rounded,
-                            size: 45,
-                            color: Colors.grey,
+                          GestureDetector(
+                            onTap: () async {
+                              await tracker.playPreviousInQueue();
+                            },
+                            child: Icon(
+                              Icons.skip_previous_rounded,
+                              size: 45,
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(width: 10),
 
@@ -340,16 +368,21 @@ class _PlayerScreenState extends State<PlayerScreen>
                               tracker.isPlaying
                                   ? Icons.pause_circle_sharp
                                   : Icons.play_circle_sharp,
-                              size: 75,
+                              size: 76,
                               color: Colors.white,
                             ),
                           ),
 
                           const SizedBox(width: 10),
-                          Icon(
-                            Icons.skip_next_rounded,
-                            size: 45,
-                            color: Colors.white,
+                          GestureDetector(
+                            onTap: () async {
+                              await tracker.playNextInQueue();
+                            },
+                            child: Icon(
+                              Icons.skip_next_rounded,
+                              size: 45,
+                              color: Colors.white,
+                            ),
                           ),
                         ],
                       ),

@@ -945,6 +945,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                                             onDismissed: () {}, // never called, because we return false below
                                             confirmDismiss: () async {
                                               player.addToQueue(currentTrack);
+
                                               log("Song Added to Queue");
                                               log(
                                                 'Current Queue length: ${player.queue.length}',
@@ -969,6 +970,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                                                     ),
                                                   ),
                                                 );
+                                              FocusScope.of(context).unfocus();
                                               return false; // false = don't remove the row, bounce it back
                                             },
                                           ),
