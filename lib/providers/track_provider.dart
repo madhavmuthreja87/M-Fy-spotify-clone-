@@ -51,22 +51,75 @@ class TrackProvider extends ChangeNotifier {
   int currentQueueIndex = -1;
 
   Future<void> playNextInQueue() async {
-    if (_queue.isEmpty) return;
+    if (_queue.isEmpty) {
+      log('NEXT: Queue is empty');
+      return;
+    }
 
-    if (currentQueueIndex >= _queue.length - 1) return;
+    final int nextIndex;
 
-    currentQueueIndex++;
+    if (currentQueueIndex == -1) {
+      // If the current song is in the queue, start after it.
+      final currentIndex = _queue.indexWhere(
+        (song) => song.id == currentSong?.id,
+      );
+
+      nextIndex = currentIndex == -1 ? 0 : currentIndex + 1;
+    } else {
+      nextIndex = currentQueueIndex + 1;
+    }
+
+    if (nextIndex >= _queue.length) {
+      log('NEXT: Already at the end of the queue');
+      return;
+    }
+
+    currentQueueIndex = nextIndex;
+    log('NEXT: Playing queue index $currentQueueIndex');
     await setSongAndPlay(_queue[currentQueueIndex]);
   }
 
   Future<void> playPreviousInQueue() async {
-    if (_queue.isEmpty || currentQueueIndex <= 0) return;
+    if (_queue.isEmpty) {
+      log('PREVIOUS: Queue is empty');
+      return;
+    }
 
-    currentQueueIndex--;
+    final int previousIndex;
+
+    if (currentQueueIndex == -1) {
+      final currentIndex = _queue.indexWhere(
+        (song) => song.id == currentSong?.id,
+      );
+
+      previousIndex = currentIndex == -1 ? -1 : currentIndex - 1;
+    } else {
+      previousIndex = currentQueueIndex - 1;
+    }
+
+    if (previousIndex < 0 || previousIndex >= _queue.length) {
+      log('PREVIOUS: Already at the beginning of the queue');
+      return;
+    }
+
+    currentQueueIndex = previousIndex;
+    log('PREVIOUS: Playing queue index $currentQueueIndex');
     await setSongAndPlay(_queue[currentQueueIndex]);
   }
 
   TrackProvider(this.handler) {
+    handler.onNext = () async {
+      log('TRACK PROVIDER: onNext callback received');
+      await playNextInQueue();
+    };
+
+    handler.onPrevious = () async {
+      log('TRACK PROVIDER: onPrevious callback received');
+      await playPreviousInQueue();
+    };
+
+    log('TRACK PROVIDER: callbacks registered');
+
     player.playingStream.listen((playing) {
       if (_playToken == 0) return; // ignore initial
       isPlaying = playing;
