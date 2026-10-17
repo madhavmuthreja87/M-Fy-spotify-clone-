@@ -552,6 +552,7 @@ import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 import 'package:sf/services/audis_api.dart';
 
@@ -933,102 +934,161 @@ class _RecentsScreenState extends State<RecentsScreen> {
                                       onTap: () {
                                         player.setSongAndPlay(currentTrack);
                                       },
-                                      child: ListTile(
-                                        contentPadding: EdgeInsets.zero,
-                                        dense: true,
-                                        leading: ClipRRect(
-                                          borderRadius: BorderRadius.circular(
-                                            7,
-                                          ),
-                                          child: CachedNetworkImage(
-                                            imageUrl: recentContent['artwork'],
-                                            fit: BoxFit.cover,
-                                            height: 47,
-                                            width: 47,
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Container(
-                                                      color:
-                                                          const Color.fromARGB(
-                                                            225,
-                                                            160,
-                                                            160,
-                                                            160,
-                                                          ),
-                                                      child: const Center(
-                                                        child: Icon(
-                                                          Icons.music_note,
-                                                          color: Colors.white,
-                                                        ),
+                                      child: Slidable(
+                                        key: ValueKey(recentContent['id']),
+                                        startActionPane: ActionPane(
+                                          motion: const StretchMotion(), // the stretch effect
+                                          extentRatio: 0.25,
+                                          dismissible: DismissiblePane(
+                                            closeOnCancel: true, // row slides back after release
+                                            dismissThreshold: 0.20, // how far to swipe to trigger (0 to 1)
+                                            onDismissed: () {}, // never called, because we return false below
+                                            confirmDismiss: () async {
+                                              player.addToQueue(currentTrack);
+                                              log("Song Added to Queue");
+                                              log(
+                                                'Current Queue length: ${player.queue.length}',
+                                              );
+                                              ScaffoldMessenger.of(context)
+                                                ..hideCurrentSnackBar()
+                                                ..showSnackBar(
+                                                  const SnackBar(
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    content: Text(
+                                                      "Added to queue",
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                     ),
-                                          ),
-                                        ),
-                                        title: Text(
-                                          recentContent['title'],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14.7,
-                                            fontWeight: FontWeight.w500,
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          recentContent['artist'],
-                                          style: TextStyle(color: Colors.grey),
-                                        ),
-                                        trailing: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const SizedBox(width: 8),
-                                            GestureDetector(
-                                              onTap: () async {
-                                                log("Like the song pressed");
-
-                                                if (!isLiked)
-                                                  await player.saveLikedSongs(
-                                                    currentTrack,
-                                                  );
-                                                else
-                                                  await player.removeLikedSong(
-                                                    currentTrack.id,
-                                                  );
-
-                                                setState(() {});
-                                              },
-                                              child: !isLiked
-                                                  ? Icon(
-                                                      Icons.add_circle_outline,
-                                                      color: Colors.grey,
-                                                      size: 20,
-                                                    )
-                                                  : Icon(
-                                                      Icons.check_circle,
-                                                      color:
-                                                          const Color.fromARGB(
-                                                            255,
-                                                            92,
-                                                            214,
-                                                            96,
-                                                          ),
-                                                      size: 20,
+                                                    duration: Duration(
+                                                      seconds: 1,
                                                     ),
-                                            ),
-                                            const SizedBox(width: 25),
-                                            GestureDetector(
-                                              onTap: () {
-                                                player.removeRecentSong(
-                                                  currentTrack.id,
+                                                  ),
                                                 );
+                                              return false; // false = don't remove the row, bounce it back
+                                            },
+                                          ),
+                                          children: [
+                                            SlidableAction(
+                                              onPressed: (_) {
+                                                player.addToQueue(currentTrack); // also works if the user taps the button
                                               },
-                                              child: Icon(
-                                                Icons.close,
-                                                color: Colors.grey,
-                                                size: 26,
+                                              backgroundColor: const Color(
+                                                0xFF1DB954,
                                               ),
+                                              foregroundColor: Colors.white,
+                                              icon: Icons.queue_music,
                                             ),
                                           ],
+                                        ),
+                                        child: ListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          dense: true,
+                                          leading: ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              7,
+                                            ),
+                                            child: CachedNetworkImage(
+                                              imageUrl:
+                                                  recentContent['artwork'],
+                                              fit: BoxFit.cover,
+                                              height: 47,
+                                              width: 47,
+                                              errorWidget:
+                                                  (
+                                                    context,
+                                                    url,
+                                                    error,
+                                                  ) => Container(
+                                                    color: const Color.fromARGB(
+                                                      225,
+                                                      160,
+                                                      160,
+                                                      160,
+                                                    ),
+                                                    child: const Center(
+                                                      child: Icon(
+                                                        Icons.music_note,
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                  ),
+                                            ),
+                                          ),
+                                          title: Text(
+                                            recentContent['title'],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14.7,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            recentContent['artist'],
+                                            style: TextStyle(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          trailing: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const SizedBox(width: 8),
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  log("Like the song pressed");
+
+                                                  if (!isLiked)
+                                                    await player.saveLikedSongs(
+                                                      currentTrack,
+                                                    );
+                                                  else
+                                                    await player
+                                                        .removeLikedSong(
+                                                          currentTrack.id,
+                                                        );
+
+                                                  setState(() {});
+                                                },
+                                                child: !isLiked
+                                                    ? Icon(
+                                                        Icons
+                                                            .add_circle_outline,
+                                                        color: Colors.grey,
+                                                        size: 20,
+                                                      )
+                                                    : Icon(
+                                                        Icons.check_circle,
+                                                        color:
+                                                            const Color.fromARGB(
+                                                              255,
+                                                              92,
+                                                              214,
+                                                              96,
+                                                            ),
+                                                        size: 20,
+                                                      ),
+                                              ),
+                                              const SizedBox(width: 25),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  player.removeRecentSong(
+                                                    currentTrack.id,
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.close,
+                                                  color: Colors.grey,
+                                                  size: 26,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     );

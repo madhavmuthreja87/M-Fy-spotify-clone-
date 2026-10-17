@@ -30,9 +30,9 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   Color backgroundColor = Colors.black;
 
-  Future<void> getBackgroundColor() async {
+  Future<void> getBackgroundColor(String? artwork) async {
     final palette = await PaletteGenerator.fromImageProvider(
-      NetworkImage(widget.song.artwork!),
+      NetworkImage(artwork!),
     );
     Color selectedColor = Colors.blueGrey;
 
@@ -57,16 +57,23 @@ class _PlayerScreenState extends State<PlayerScreen>
     // TODO: implement initState
     super.initState();
 
-    getBackgroundColor();
+    getBackgroundColor(widget.song.artwork);
   }
 
   @override
   Widget build(BuildContext context) {
     final tracker = context.watch<TrackProvider>();
     final player = tracker.player;
+    final currentSong = tracker.currentSong;
     bool isLiked = tracker.likedSongs().any(
       (song) => song['id'] == widget.song.id,
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        getBackgroundColor(currentSong!.artwork!);
+      }
+    });
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
@@ -127,7 +134,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                       //   width: 340,
                       // ),
                       child: CachedNetworkImage(
-                        imageUrl: widget.song.artwork!,
+                        imageUrl: currentSong!.artwork!,
                         fit: BoxFit.cover,
                         height: 320,
                         width: 340,
@@ -153,9 +160,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            widget.song.title.length > 13
-                                ? widget.song.title.substring(0, 13) + "..."
-                                : widget.song.title,
+                            currentSong.title.length > 13
+                                ? currentSong.title.substring(0, 13) + "..."
+                                : currentSong.title,
                             maxLines: 1,
                             overflow: TextOverflow.fade,
                             style: TextStyle(
@@ -173,7 +180,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "Not set",
+                                currentSong.artist.substring(0, 5),
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: 16,

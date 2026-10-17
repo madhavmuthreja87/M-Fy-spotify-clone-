@@ -245,29 +245,23 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         }
-                        final element= mostPlayed[index];
+                        final element = mostPlayed[index];
 
                         return GestureDetector(
-                          onTap: ()
-                          {
-
+                          onTap: () {
                             log("Most played song section pressed");
 
-                            context
-                                        .read<TrackProvider>()
-                                        .setSongAndPlay(
-                                          TrackModel(
-                                            id: element['id'] ?? "",
-                                            title: element['title'] ?? "",
-                                            artist: element['artist'] ?? "",
-                                            duration: element['duration'] ?? "",
-                                            isStreamable:
-                                                element['isStreamable'] ?? "",
-                                            artwork: element['artwork'] ?? "",
-                                            streamUrl:
-                                                element['streamUrl'] ?? "",
-                                          ),
-                                        );
+                            context.read<TrackProvider>().setSongAndPlay(
+                              TrackModel(
+                                id: element['id'] ?? "",
+                                title: element['title'] ?? "",
+                                artist: element['artist'] ?? "",
+                                duration: element['duration'] ?? "",
+                                isStreamable: element['isStreamable'] ?? "",
+                                artwork: element['artwork'] ?? "",
+                                streamUrl: element['streamUrl'] ?? "",
+                              ),
+                            );
                           },
                           child: Container(
                             decoration: BoxDecoration(
@@ -278,7 +272,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               children: [
                                 // Image
                                 ClipRRect(
-                                  borderRadius: BorderRadiusGeometry.circular(5),
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    5,
+                                  ),
                                   // child: Image.network(
                                   //   song['artwork'],
                                   //   width: 51,
@@ -307,13 +303,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                   ),
                                 ),
-                          
+
                                 const SizedBox(width: 8),
-                          
+
                                 // Song title
                                 Expanded(
                                   child: Text(
-                                   element['title'],
+                                    element['title'],
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(

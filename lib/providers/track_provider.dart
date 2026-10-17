@@ -19,6 +19,8 @@ class TrackProvider extends ChangeNotifier {
 
   List<TrackModel> trendingSongsList = [];
   List<TrackModel> latestSongsList = [];
+  List<TrackModel> _queue = [];
+  List<TrackModel> get queue => _queue;
 
   final Box recentBox = Hive.box("recentSongs");
   final Box likedBox = Hive.box("likedSongs");
@@ -28,11 +30,45 @@ class TrackProvider extends ChangeNotifier {
   final YoutubeServices _ytService = YoutubeServices();
   int _playToken = 0;
 
+  void addToQueue(TrackModel song) {
+    queue.add(song);
+    notifyListeners();
+  }
+
+  void removeFromQueue(int idx) {
+    if (idx < 0 || idx >= queue.length) return;
+
+    queue.removeAt(idx);
+    notifyListeners();
+  }
+
+  void clearQueue() {
+    queue.clear();
+    notifyListeners();
+  }
+
+  Future<void> playNextInQueue() async {
+    if (_queue.isEmpty) {
+      return;
+    }
+
+    final nextSong = _queue.removeAt(0);
+    notifyListeners();
+
+    setSongAndPlay(nextSong);
+  }
+
   TrackProvider(this.handler) {
     player.playingStream.listen((playing) {
       if (_playToken == 0) return; // ignore initial
       isPlaying = playing;
       notifyListeners();
+    });
+
+    player.processingStateStream.listen((state) {
+      if (state == ProcessingState.completed) {
+        playNextInQueue();
+      }
     });
   }
 
