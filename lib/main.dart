@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
@@ -46,6 +47,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home:SplashPage(), theme: ThemeData(scaffoldBackgroundColor: const Color(0xFF121212)),debugShowCheckedModeBanner: false, );
+    return MaterialApp(
+      home: SplashPage(),
+      theme: ThemeData(
+        scaffoldBackgroundColor: const Color(0xFF121212),
+        brightness: Brightness.dark,
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+        ),
+      ),
+      debugShowCheckedModeBanner: false,
+    );
   }
 }

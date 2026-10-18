@@ -642,18 +642,14 @@ class _RecentsScreenState extends State<RecentsScreen> {
 
   Widget _searchBody() {
     if (isSearching) {
-      return Positioned.fill(
-        child: IgnorePointer(
-          child: const Center(
-            child: SizedBox(
-              height: 37.5,
-              width: 37.5,
-              child: CircularProgressIndicator(
-                color: Color.fromARGB(255, 65, 197, 69),
-                backgroundColor: Color.fromARGB(174, 87, 201, 91),
-                strokeWidth: 6,
-              ),
-            ),
+      return const Center(
+        child: SizedBox(
+          height: 37.5,
+          width: 37.5,
+          child: CircularProgressIndicator(
+            color: Color.fromARGB(255, 65, 197, 69),
+            backgroundColor: Color.fromARGB(174, 87, 201, 91),
+            strokeWidth: 6,
           ),
         ),
       );
@@ -681,6 +677,8 @@ class _RecentsScreenState extends State<RecentsScreen> {
             FocusScope.of(context).unfocus();
             context.read<TrackProvider>().setSongAndPlay(searchContent);
           },
+
+          ////////////////////////////
           child: ListTile(
             dense: true,
             leading: ClipRRect(
