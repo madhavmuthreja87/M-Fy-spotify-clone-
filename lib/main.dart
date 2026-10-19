@@ -24,6 +24,7 @@ void main() async {
   await Hive.openBox('likedSongs');
   await Hive.openBox("playlistBox");
   await Hive.openBox("mostPlayedBox");
+  await Hive.openBox("downloadedSongs");
 
   await Permission.notification.request();
   final handler = await AudioService.init<MyAudioHandler>(

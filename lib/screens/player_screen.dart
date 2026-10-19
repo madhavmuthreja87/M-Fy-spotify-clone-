@@ -336,10 +336,24 @@ class _PlayerScreenState extends State<PlayerScreen>
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(
-                        Icons.shuffle_rounded,
-                        size: 28,
-                        color: Colors.white,
+                      GestureDetector(
+                        onTap: () async {
+                          try {
+                            await tracker.downloadSong(currentSong);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Downloading the songs")),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Download Faild ${e}")),
+                            );
+                          }
+                        },
+                        child: Icon(
+                          Icons.install_mobile,
+                          size: 28,
+                          color: Colors.white,
+                        ),
                       ),
 
                       Row(

@@ -10,6 +10,15 @@ import 'package:sf/services/audis_api.dart';
 import 'package:sf/models/track_model.dart';
 import 'package:sf/services/youtube_services.dart';
 
+import 'dart:io';
+
+import 'package:dio/dio.dart';
+import 'package:hive/hive.dart';
+import 'package:flutter/widgets.dart';
+
+import 'package:sf/models/track_model.dart';
+import 'package:sf/services/download_service.dart';
+
 class TrackProvider extends ChangeNotifier {
   final MyAudioHandler handler;
   AudioPlayer get player => handler.player;
@@ -26,8 +35,14 @@ class TrackProvider extends ChangeNotifier {
   final Box likedBox = Hive.box("likedSongs");
   final Box playlistBox = Hive.box("playlistBox");
   final Box mostPlayedBox = Hive.box("mostPlayedBox");
+  final Box downloadedSongsBox = Hive.box('downloadedSongs');
 
   final YoutubeServices _ytService = YoutubeServices();
+  final DownloadService _downloadService = DownloadService();
+
+  final Map<String, double> downloadProgress = {};
+  final Map<String, CancelToken> _downloadTokens = {};
+  final Set<String> downloadingSongIds = {};
   int _playToken = 0;
 
   void addToQueue(TrackModel song) {
@@ -363,6 +378,116 @@ class TrackProvider extends ChangeNotifier {
         'playCount': i == 7 ? 2 : 1,
       });
     }
+    notifyListeners();
+  }
+
+  /// Returns true only if the saved audio file still exists.
+  Future<bool> isDownloaded(String songId) async {
+    final box = await downloadedSongsBox;
+    final data = box.get(songId);
+
+    if (data is! Map) return false;
+
+    final path = data['localPath'];
+
+    if (path is! String || path.isEmpty) return false;
+
+    return File(path).exists();
+  }
+
+  /// Returns saved download metadata for the Downloads screen.
+  Future<List<Map<String, dynamic>>> getDownloadedSongs() async {
+    final box = await downloadedSongsBox;
+    final result = <Map<String, dynamic>>[];
+
+    for (final key in box.keys.toList()) {
+      final data = box.get(key);
+
+      if (data is! Map) continue;
+
+      final song = Map<String, dynamic>.from(data);
+      final path = song['localPath'];
+
+      if (path is String && await File(path).exists()) {
+        result.add(song);
+      } else {
+        // Remove metadata for files that no longer exist.
+        await box.delete(key);
+      }
+    }
+
+    return result;
+  }
+
+  /// Downloads a direct audio URL that the source permits saving.
+  Future<void> downloadSong(TrackModel track) async {
+    final id = track.id;
+
+    if (downloadingSongIds.contains(id)) return;
+
+    // streamUrl must be an authorized, direct downloadable audio URL.
+    final url = track.streamUrl!.trim();
+
+    if (url.isEmpty) {
+      throw Exception('No downloadable audio URL is available for this song.');
+    }
+
+    final box = await downloadedSongsBox;
+
+    if (await isDownloaded(id)) return;
+
+    final safeId = id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+
+    final cancelToken = CancelToken();
+
+    downloadingSongIds.add(id);
+    _downloadTokens[id] = cancelToken;
+    downloadProgress[id] = 0;
+    notifyListeners();
+
+    try {
+      final localPath = await _downloadService.downloadAudio(
+        url: url,
+        fileName: '$safeId.audio',
+        cancelToken: cancelToken,
+        onProgress: (progress) {
+          downloadProgress[id] = progress;
+          notifyListeners();
+        },
+      );
+
+      await box.put(id, {
+        'id': track.id,
+        'title': track.title,
+        'artist': track.artist,
+        'duration': track.duration,
+        'artwork': track.artwork ?? '',
+        'source': 'audius',
+        'localPath': localPath,
+      });
+    } finally {
+      downloadingSongIds.remove(id);
+      _downloadTokens.remove(id);
+      downloadProgress.remove(id);
+      notifyListeners();
+    }
+  }
+
+  /// Cancels an active download.
+  void cancelDownload(String songId) {
+    _downloadTokens[songId]?.cancel('Download cancelled');
+  }
+
+  /// Removes the saved audio file and its Hive metadata.
+  Future<void> removeDownload(String songId) async {
+    final box = await downloadedSongsBox;
+    final data = box.get(songId);
+
+    if (data is Map && data['localPath'] is String) {
+      await _downloadService.deleteAudio(data['localPath'] as String);
+    }
+
+    await box.delete(songId);
     notifyListeners();
   }
 

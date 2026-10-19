@@ -679,38 +679,103 @@ class _RecentsScreenState extends State<RecentsScreen> {
           },
 
           ////////////////////////////
-          child: ListTile(
-            dense: true,
-            leading: ClipRRect(
-              borderRadius: BorderRadius.circular(7),
-              child: CachedNetworkImage(
-                imageUrl: searchContent.artwork ?? '',
-                fit: BoxFit.cover,
-                height: 50,
-                width: 50,
-                errorWidget: (context, url, error) => Container(
-                  color: const Color.fromARGB(225, 160, 160, 160),
-                  child: const Center(
-                    child: Icon(Icons.music_note, color: Colors.white),
+          child: Slidable(
+            key: ValueKey(searchContent.id),
+            startActionPane: ActionPane(
+              motion: const StretchMotion(), // the stretch effect
+              extentRatio: 0.25,
+              dismissible: DismissiblePane(
+                closeOnCancel: true, // row slides back after release
+                dismissThreshold: 0.20, // how far to swipe to trigger (0 to 1)
+                onDismissed:
+                    () {}, // never called, because we return false below
+                confirmDismiss: () async {
+                  final player = context.read<TrackProvider>();
+
+                  player.addToQueue(searchContent);
+
+                  log("Song Added to Queue");
+                  log('Current Queue length: ${player.queue.length}');
+
+                  ScaffoldMessenger.of(context)
+                    ..hideCurrentSnackBar()
+                    ..showSnackBar(
+                      const SnackBar(
+                        backgroundColor: Colors.green,
+                        content: Text(
+                          "Added to queue",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+
+                  FocusScope.of(context).unfocus();
+
+                  return false;
+                },
+              ),
+              children: [
+                SlidableAction(
+                  onPressed: (actionContext) {
+                    actionContext.read<TrackProvider>().addToQueue(
+                      searchContent,
+                    );
+
+                    Slidable.of(actionContext)?.close();
+
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(
+                        const SnackBar(
+                          content: Text("Added to queue"),
+                          duration: Duration(seconds: 1),
+                        ),
+                      );
+                  },
+                  backgroundColor: const Color(0xFF1DB954),
+                  foregroundColor: Colors.white,
+                  icon: Icons.queue_music,
+                ),
+              ],
+            ),
+            child: ListTile(
+              dense: true,
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(7),
+                child: CachedNetworkImage(
+                  imageUrl: searchContent.artwork ?? '',
+                  fit: BoxFit.cover,
+                  height: 50,
+                  width: 50,
+                  errorWidget: (context, url, error) => Container(
+                    color: const Color.fromARGB(225, 160, 160, 160),
+                    child: const Center(
+                      child: Icon(Icons.music_note, color: Colors.white),
+                    ),
                   ),
                 ),
               ),
-            ),
-            title: Text(
-              searchContent.title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14.7,
-                fontWeight: FontWeight.w500,
+              title: Text(
+                searchContent.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14.7,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ),
-            subtitle: Text(
-              "${searchContent.artist}",
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Colors.grey),
+              subtitle: Text(
+                "${searchContent.artist}",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.grey),
+              ),
             ),
           ),
         );
