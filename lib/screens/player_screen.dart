@@ -340,12 +340,27 @@ class _PlayerScreenState extends State<PlayerScreen>
                         onTap: () async {
                           try {
                             await tracker.downloadSong(currentSong);
+
+                            if (!context.mounted) return;
+
+                            final downloaded = await tracker.isDownloaded(
+                              currentSong.id,
+                            );
+
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Downloading the songs")),
+                              SnackBar(
+                                content: Text(
+                                  downloaded
+                                      ? 'Song downloaded successfully'
+                                      : 'Download did not complete',
+                                ),
+                              ),
                             );
                           } catch (e) {
+                            if (!context.mounted) return;
+
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Download Faild ${e}")),
+                              SnackBar(content: Text('Download failed: $e')),
                             );
                           }
                         },

@@ -420,51 +420,88 @@ class TrackProvider extends ChangeNotifier {
   }
 
   /// Downloads a direct audio URL that the source permits saving.
+
   Future<void> downloadSong(TrackModel track) async {
     final id = track.id;
 
-    if (downloadingSongIds.contains(id)) return;
-
-    // streamUrl must be an authorized, direct downloadable audio URL.
-    final url = track.streamUrl!.trim();
-
-    if (url.isEmpty) {
-      throw Exception('No downloadable audio URL is available for this song.');
+    if (downloadingSongIds.contains(id)) {
+      log('Download already in progress: $id');
+      return;
     }
 
-    final box = await downloadedSongsBox;
-
-    if (await isDownloaded(id)) return;
-
-    final safeId = id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+    if (await isDownloaded(id)) {
+      log('Song already downloaded: ${track.title}');
+      return;
+    }
 
     final cancelToken = CancelToken();
 
     downloadingSongIds.add(id);
     _downloadTokens[id] = cancelToken;
-    downloadProgress[id] = 0;
+    downloadProgress[id] = 0.0;
     notifyListeners();
 
     try {
+      String url;
+
+      if (_isYoutubeId(id)) {
+        // Resolve a fresh YouTube audio URL.
+        final uri = await _ytService.resolveAudioUri(id, forceRefresh: true);
+        url = uri.toString();
+        log('YT DOWNLOAD: resolved audio URL for ${track.title}');
+      } else {
+        // Audius tracks use their existing direct stream URL.
+        url = track.streamUrl?.trim() ?? '';
+
+        if (url.isEmpty) {
+          throw Exception('No download URL available for ${track.title}.');
+        }
+      }
+
+      final safeId = id.replaceAll(RegExp(r'[^a-zA-Z0-9_-]'), '_');
+
+      double lastNotifiedProgress = -1.0;
+
       final localPath = await _downloadService.downloadAudio(
         url: url,
         fileName: '$safeId.audio',
         cancelToken: cancelToken,
         onProgress: (progress) {
-          downloadProgress[id] = progress;
-          notifyListeners();
+          final normalized = progress.clamp(0.0, 1.0).toDouble();
+
+          if (lastNotifiedProgress < 0 ||
+              normalized - lastNotifiedProgress >= 0.01 ||
+              normalized >= 1.0) {
+            lastNotifiedProgress = normalized;
+            downloadProgress[id] = normalized;
+            notifyListeners();
+          }
         },
       );
 
-      await box.put(id, {
+      final file = File(localPath);
+
+      if (!await file.exists() || await file.length() == 0) {
+        throw Exception('Downloaded file is missing or empty.');
+      }
+
+      await downloadedSongsBox.put(id, {
         'id': track.id,
         'title': track.title,
         'artist': track.artist,
         'duration': track.duration,
         'artwork': track.artwork ?? '',
-        'source': 'audius',
+        'source': _isYoutubeId(id) ? 'youtube' : 'audius',
         'localPath': localPath,
       });
+
+      await downloadedSongsBox.flush();
+
+      log('DOWNLOAD SUCCESS: ${track.title}');
+      log('Saved path: $localPath');
+    } catch (e, stackTrace) {
+      log('DOWNLOAD FAILED: ${track.title}', error: e, stackTrace: stackTrace);
+      rethrow;
     } finally {
       downloadingSongIds.remove(id);
       _downloadTokens.remove(id);
@@ -489,6 +526,58 @@ class TrackProvider extends ChangeNotifier {
 
     await box.delete(songId);
     notifyListeners();
+  }
+
+  Future<void> playDownloadedSong(TrackModel song, String localPath) async {
+    final file = File(localPath);
+
+    if (!await file.exists() || await file.length() == 0) {
+      throw Exception('Downloaded audio file is missing or empty.');
+    }
+
+    final token = ++_playToken;
+
+    currentSong = song;
+    isPlaying = false;
+    notifyListeners();
+
+    try {
+      handler.mediaItem.add(
+        MediaItem(
+          id: song.id,
+          title: song.title,
+          artist: song.artist,
+          artUri: Uri.tryParse(song.artwork ?? ''),
+          duration: Duration(seconds: int.tryParse('${song.duration}') ?? 0),
+        ),
+      );
+
+      await saveRecentSongs(song);
+
+      if (token != _playToken) return;
+
+      await player.setAudioSource(AudioSource.file(localPath));
+
+      if (token != _playToken) return;
+
+      await player.play();
+
+      isPlaying = player.playing;
+      notifyListeners();
+
+      if (player.playing) {
+        await recordSongPlayedCount(song);
+      }
+    } catch (e, stack) {
+      log('Downloaded playback failed: $e', stackTrace: stack);
+
+      if (token == _playToken) {
+        isPlaying = false;
+        notifyListeners();
+      }
+
+      rethrow;
+    }
   }
 
   @override

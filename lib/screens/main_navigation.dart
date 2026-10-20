@@ -4,7 +4,7 @@ import 'package:sf/providers/track_provider.dart';
 import 'package:sf/screens/home_screen.dart';
 import 'package:sf/screens/library_screen.dart';
 import 'package:sf/screens/search_screen.dart';
-import 'package:sf/screens/settings_screen.dart';
+import 'package:sf/screens/downloads_screen.dart';
 import 'package:sf/widgets/mini_player.dart';
 
 class MainNavigation extends StatefulWidget {
@@ -19,7 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
     HomeScreen(),
     SearchScreen(),
     LibraryScreen(),
-    SettingsScreen(),
+    DownloadsScreen(),
   ];
 
   int currentIndex = 0;

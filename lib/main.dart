@@ -11,7 +11,7 @@ import 'package:sf/screens/home_screen.dart';
 import 'package:sf/screens/library_screen.dart';
 
 import 'package:sf/screens/search_screen.dart';
-import 'package:sf/screens/settings_screen.dart';
+import 'package:sf/screens/downloads_screen.dart';
 import 'package:sf/widgets/mini_player.dart';
 
 import 'package:permission_handler/permission_handler.dart';

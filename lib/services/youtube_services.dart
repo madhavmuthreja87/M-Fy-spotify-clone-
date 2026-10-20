@@ -49,7 +49,7 @@ class YoutubeServices {
     }
   }
 
-  Future<Uri> _resolveAudioUri(
+  Future<Uri> resolveAudioUri(
     String videoId, {
     required bool forceRefresh,
   }) async {
@@ -117,11 +117,7 @@ class YoutubeServices {
           'YT loading $videoId '
           '(attempt ${attempt + 1}, refresh=$shouldRefresh)',
         );
-
-        final uri = await _resolveAudioUri(
-          videoId,
-          forceRefresh: shouldRefresh,
-        );
+        final uri = await resolveAudioUri(videoId, forceRefresh: shouldRefresh);
 
         if (_disposed) {
           throw StateError('YoutubeServices has been disposed.');
