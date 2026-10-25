@@ -120,8 +120,8 @@ class _MainNavigationState extends State<MainNavigation> {
                       label: "Library",
                     ),
                     BottomNavigationBarItem(
-                      icon: Icon(Icons.settings),
-                      label: "Settings",
+                      icon: Icon(Icons.download),
+                      label: "Downloads",
                     ),
                   ],
                 ),

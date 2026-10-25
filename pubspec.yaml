@@ -63,6 +63,12 @@ dependencies:
 
   dio:
   path_provider: 
+
+  firebase_auth: 
+  firebase_core: 
+  cloud_firestore: 
+  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
