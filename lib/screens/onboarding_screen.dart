@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sf/screens/logi_in_screen.dart';
+import 'package:sf/screens/sign_up_screen.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends StatelessWidget {
   const new({super.key});
 
-  @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
-}
-
-class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +56,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           101,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUpScreen(),
+                          ),
+                        );
+                      },
                       child: Text(
                         "Sign up for free",
                         style: TextStyle(
@@ -79,7 +83,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       style: TextButton.styleFrom(
                         side: BorderSide(color: Colors.grey),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LogiInScreen(),
+                          ),
+                        );
+                      },
                       child: Text(
                         "Log in",
                         style: TextStyle(
