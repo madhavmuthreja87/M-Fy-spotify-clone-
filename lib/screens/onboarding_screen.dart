@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sf/screens/logi_in_screen.dart';
-import 'package:sf/screens/sign_up_screen.dart';
+import 'package:sf/screens/Sign_Up/sign_up_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const new({super.key});

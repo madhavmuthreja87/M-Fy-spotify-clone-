@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sf/screens/sign_up_screen.dart';
+import 'package:sf/screens/Sign_Up/sign_up_screen.dart';
 
 class LogiInScreen extends StatefulWidget {
   const new({super.key});

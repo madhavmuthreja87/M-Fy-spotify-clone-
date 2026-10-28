@@ -1,6 +1,8 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sf/screens/Sign_Up/sign_up_6_screen.dart';
 import 'package:sf/screens/onboarding_screen.dart';
+import 'package:sf/screens/Sign_Up/sign_up_5_screen.dart';
 
 import 'firebase_options.dart';
 
@@ -56,7 +58,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: OnboardingScreen(),
+      home: SignUp6Screen(),
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF121212),
         brightness: Brightness.dark,

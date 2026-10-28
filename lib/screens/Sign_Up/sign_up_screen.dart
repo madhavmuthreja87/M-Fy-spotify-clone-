@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sf/screens/Sign_Up/sign_up_2_screen.dart';
 import 'package:sf/screens/logi_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text(
           "Create account",
@@ -93,7 +95,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignUpScreen(),
+                            builder: (context) => SignUp2Screen(),
                           ),
                         );
                       },
