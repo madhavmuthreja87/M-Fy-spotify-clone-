@@ -146,9 +146,11 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-
                   onTap: () {
-                    debugPrint('Selected: ${artist['name']}');
+                    Navigator.pop(context, {
+                      'name': artist['name'] ?? 'Unknown artist',
+                      'image': artist['image'] ?? '',
+                    });
                   },
                 );
               },

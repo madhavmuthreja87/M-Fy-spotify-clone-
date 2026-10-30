@@ -134,6 +134,7 @@
 // }
 
 import 'package:flutter/material.dart';
+import 'package:sf/screens/Sign_Up/great_picks.dart';
 import 'package:sf/screens/Sign_Up/sign_up_8_screen.dart';
 
 class SignUp7Screen extends StatefulWidget {
@@ -146,6 +147,7 @@ class SignUp7Screen extends StatefulWidget {
 }
 
 class _SignUp7ScreenState extends State<SignUp7Screen> {
+  Map<String, String>? searchedArtists;
   final Set<String> selectedArtists = {};
 
   String selectedGenre = 'For You';
@@ -164,6 +166,32 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
   ];
   // Local artist data for testing.
   // Replace these URLs with verified artist image URLs.
+  List<Map<String, String>> get selectedArtistsData {
+    final List<Map<String, String>> result = [];
+
+    for (final artistName in selectedArtists) {
+      // Search in all local artist categories
+      for (final artists in artistData.values) {
+        final artist = artists.firstWhere(
+          (a) => a['name'] == artistName,
+          orElse: () => {},
+        );
+
+        if (artist.isNotEmpty) {
+          result.add(artist);
+          break;
+        }
+      }
+
+      // Include artist selected through search
+      if (searchedArtists != null && searchedArtists!['name'] == artistName) {
+        result.add(searchedArtists!);
+      }
+    }
+
+    return result;
+  }
+
   final Map<String, List<Map<String, String>>> artistData = {
     'Hindi': [
       {
@@ -464,11 +492,10 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
-        extendBody: true,
-        extendBodyBehindAppBar: true,
+        backgroundColor: Colors.black,
         body: Stack(
           children: [
+            // Main content
             Padding(
               padding: const EdgeInsets.only(
                 left: 12,
@@ -481,21 +508,24 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                 children: [
                   const SizedBox(height: 15),
 
-                  const Text(
-                    'What music do you like?',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w800,
-                      fontSize: 30,
-                    ),
-                  ),
+                  selectedArtists.isEmpty
+                      ? const Text(
+                          'What music do you like?',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 30,
+                          ),
+                        )
+                      : const Text(
+                          'Choose 3 or more artists you like.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 30,
+                          ),
+                        ),
 
-                  // const SizedBox(height: 8),
-
-                  // const Text(
-                  //   'Choose at least 3 artists you like.',
-                  //   style: TextStyle(color: Colors.grey, fontSize: 14),
-                  // ),
                   const SizedBox(height: 20),
 
                   GestureDetector(
@@ -605,16 +635,10 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                               Stack(
                                 children: [
                                   Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
+                                    width: 90,
+                                    height: 90,
+                                    decoration: const BoxDecoration(
                                       shape: BoxShape.circle,
-                                      border: Border.all(
-                                        // color: isSelected
-                                        //     ? const Color(0xFF1ED760)
-                                        //     : Colors.transparent,
-                                        width: 3,
-                                      ),
                                     ),
                                     child: ClipOval(
                                       child: Image.network(
@@ -644,7 +668,6 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                                         child: Icon(
                                           Icons.check_circle_rounded,
                                           color: Colors.white,
-                                          fontWeight: FontWeight.w600,
                                           size: 31,
                                         ),
                                       ),
@@ -671,71 +694,101 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                       },
                     ),
                   ),
-
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   height: 48,
-                  //   child: ElevatedButton(
-                  //     onPressed: selectedArtists.length >= 3
-                  //         ? () {
-                  //             debugPrint('Selected artists: $selectedArtists');
-                  //             // Navigate to your next signup screen here.
-                  //           }
-                  //         : null,
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: const Color(0xFF1ED760),
-                  //       disabledBackgroundColor: Colors.grey.shade800,
-                  //       foregroundColor: Colors.black,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(30),
-                  //       ),
-                  //     ),
-                  //     child: Text(
-                  //       'Continue (${selectedArtists.length}/3)',
-                  //       style: const TextStyle(fontWeight: FontWeight.bold),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
-            if (selectedArtists.length >= 3)
-              Positioned(
-                bottom: 22,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignUp8Screen(),
-                        ),
-                      );
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      elevation: 18,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 13,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                    child: const Text(
-                      'Done',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
+
+            // Bottom black gradient overlay
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 190,
+              child: IgnorePointer(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Color.fromARGB(77, 0, 0, 0),
+                        Color.fromARGB(131, 0, 0, 0),
+                        Color.fromARGB(214, 0, 0, 0),
+                      ],
+                      stops: [0.0, 0.45, 0.75, 1.0],
                     ),
                   ),
                 ),
               ),
+            ),
+
+            // Selected count and Done button (above gradient)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 30,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    '${selectedArtists.length} SELECTED',
+                    style: const TextStyle(
+                      letterSpacing: 1.4,
+                      color: Colors.white,
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w800,
+                      shadows: [
+                        Shadow(
+                          color: Colors.white70,
+                          blurRadius: 10,
+                          offset: Offset(0, 0),
+                        ),
+                        Shadow(
+                          color: Colors.white38,
+                          blurRadius: 20,
+                          offset: Offset(0, 0),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  if (selectedArtists.length >= 3)
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GreatPicks(
+                              selectedArtists: selectedArtistsData,
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        elevation: 18,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 13,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: const Text(
+                        'Done',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
