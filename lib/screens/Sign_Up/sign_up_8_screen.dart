@@ -94,12 +94,12 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 filled: true,
-                hintText: 'Search artist...',
+                hintText: 'Search',
                 hintStyle: const TextStyle(
                   fontSize: 15,
                   color: Color.fromARGB(176, 224, 224, 224),
                 ),
-                fillColor: const Color.fromARGB(108, 106, 105, 105),
+                fillColor: Colors.transparent,
               ),
 
               onChanged: searchArtists,
@@ -113,11 +113,11 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
           : artistResults.isEmpty
           ? const Center(
               child: Text(
-                'Search your favourite artist',
+                'Find artists you like.',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,
-                  fontSize: 22,
+                  fontSize: 20,
                 ),
               ),
             )

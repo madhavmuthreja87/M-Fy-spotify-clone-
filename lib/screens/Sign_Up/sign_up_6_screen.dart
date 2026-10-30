@@ -151,16 +151,16 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                               ),
                               if (selectedGenres.contains(genre['name']))
                                 const Positioned(
-                                  top: 8,
-                                  right: 8,
+                                  top: 6,
+                                  right: 6,
                                   child: CircleAvatar(
-                                    radius: 12,
+                                    radius: 13.3,
                                     backgroundColor: Colors.black,
                                     child: Icon(
                                       Icons.check_circle,
                                       color: Colors.white,
                                       fontWeight: FontWeight.w600,
-                                      size: 20,
+                                      size: 23,
                                     ),
                                   ),
                                 ),
@@ -185,7 +185,9 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignUp7Screen(),
+                            builder: (context) => SignUp7Screen(
+                              selectedLanguages: selectedGenres.toList(),
+                            ),
                           ),
                         );
                       },
