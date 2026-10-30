@@ -75,13 +75,12 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
         title: Padding(
           padding: const EdgeInsets.only(right: 18),
           child: SizedBox(
-            height: 34,
+            height: 39,
             child: TextField(
               controller: artistController,
               cursorColor: Colors.green,
               autofocus: true,
               textInputAction: TextInputAction.search,
-              selectionControls: EmptyTextSelectionControls(),
 
               style: const TextStyle(
                 color: Colors.white,
@@ -115,7 +114,11 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
           ? const Center(
               child: Text(
                 'Search your favourite artist',
-                style: TextStyle(color: Colors.white54),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 22,
+                ),
               ),
             )
           : ListView.builder(
@@ -124,6 +127,7 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
                 final artist = artistResults[index];
 
                 return ListTile(
+                  contentPadding: EdgeInsets.all(9),
                   leading: CircleAvatar(
                     radius: 25,
                     backgroundImage: artist['image'] != null
@@ -136,7 +140,11 @@ class _SignUp8ScreenState extends State<SignUp8Screen> {
 
                   title: Text(
                     artist['name'] ?? 'Unknown Artist',
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
 
                   onTap: () {
