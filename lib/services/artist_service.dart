@@ -3,26 +3,25 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ArtistService {
-  Future<List<String>> fetchArtistNames(String query) async {
-    final url = Uri.https('musicbrainz.org', '/ws/2/artist/', {
-      'query': 'artist:"$query"',
-      'fmt': 'json',
-      'limit': '20',
+  Future<List<Map<String, dynamic>>> fetchArtistNamesAndImages(
+    String query,
+  ) async {
+    final url = Uri.https('www.theaudiodb.com', '/api/v1/json/123/search.php', {
+      's': query.trim(),
     });
 
-    final response = await http.get(
-      url,
-      headers: {
-        'User-Agent': 'MFyMusicApp/1.0.0 (contact: your-email@example.com)',
-      },
-    );
+    final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      if (data['artists'] == null) {
+        return [];
+      }
+      final List artists = data['artists'];
 
-      final artists = data['artists'] as List;
-
-      return artists.map((artist) => artist['name'] as String).toSet().toList();
+      return artists.map<Map<String, dynamic>>((artist) {
+        return {'name': artist['strArtist'], 'image': artist['strArtistThumb']};
+      }).toList();
     } else {
       throw Exception('Failed to load artists');
     }
