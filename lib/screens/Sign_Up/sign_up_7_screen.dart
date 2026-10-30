@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sf/screens/Sign_Up/sign_up_8_screen.dart';
 
 class SignUp7Screen extends StatefulWidget {
   const new({super.key});
@@ -8,8 +9,6 @@ class SignUp7Screen extends StatefulWidget {
 }
 
 class _SignUp7ScreenState extends State<SignUp7Screen> {
-  TextEditingController artistController = TextEditingController();
-
   final Set<String> selectedArtists = {};
 
   String selectedGenre = 'For You';
@@ -46,31 +45,73 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                 ),
               ),
               SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                height: 45,
-                width: double.infinity,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: [
-                      Icon(Icons.search, color: Colors.black, size: 30),
-                      SizedBox(width: 8),
-                      Text(
-                        "Search",
-                        style: TextStyle(
-                          color: const Color.fromARGB(185, 0, 0, 0),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+              GestureDetector(
+                onTap: () => {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          SignUp8Screen(),
+                      transitionDuration: Duration.zero,
+                      reverseTransitionDuration: Duration.zero,
+                    ),
+                  ),
+                },
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Center(
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search,
+                          size: 30,
+                          color: const Color.fromARGB(255, 109, 109, 109),
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 8),
+                        Text(
+                          "Search",
+
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: const Color.fromARGB(255, 109, 109, 109),
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              // Container(
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.circular(3),
+              //   ),
+              //   height: 45,
+              //   width: double.infinity,
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: Row(
+              //       children: [
+              //         Icon(Icons.search, color: Colors.black, size: 30),
+              //         SizedBox(width: 8),
+              //         Text(
+              //           "Search",
+              //           style: TextStyle(
+              //             color: const Color.fromARGB(185, 0, 0, 0),
+              //             fontSize: 13,
+              //             fontWeight: FontWeight.w600,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               SizedBox(height: 20),
               SizedBox(
                 height: 29,
@@ -112,7 +153,6 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                   },
                 ),
               ),
-              
             ],
           ),
         ),

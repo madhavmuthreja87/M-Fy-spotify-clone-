@@ -6,24 +6,24 @@ class ArtistService {
   Future<List<Map<String, dynamic>>> fetchArtistNamesAndImages(
     String query,
   ) async {
-    final url = Uri.https('www.theaudiodb.com', '/api/v1/json/123/search.php', {
-      's': query.trim(),
+    if (query.trim().isEmpty) return [];
+
+    final url = Uri.https('api.deezer.com', '/search/artist', {
+      'q': query.trim(),
+      'limit': '20',
     });
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      if (data['artists'] == null) {
-        return [];
-      }
-      final List artists = data['artists'];
+      final List artists = data['data'] ?? [];
 
       return artists.map<Map<String, dynamic>>((artist) {
-        return {'name': artist['strArtist'], 'image': artist['strArtistThumb']};
+        return {'name': artist['name'], 'image': artist['picture_medium']};
       }).toList();
-    } else {
-      throw Exception('Failed to load artists');
     }
+
+    throw Exception('Failed to load artists');
   }
 }
