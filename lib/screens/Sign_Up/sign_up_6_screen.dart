@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sf/screens/Sign_Up/sign_up_7_screen.dart';
 
 class SignUp6Screen extends StatefulWidget {
   const new({super.key});
@@ -8,6 +9,8 @@ class SignUp6Screen extends StatefulWidget {
 }
 
 class _SignUp6ScreenState extends State<SignUp6Screen> {
+  final Set<String> selectedGenres = {};
+
   static const List<Map<String, dynamic>> genres = [
     {
       'name': 'Hindi',
@@ -43,25 +46,23 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
     {
       'name': 'Marathi',
       'color': Color(0xFFA86D50),
-      'image': 'https://www.alamy.com/nov-16-2012-new-delhi-new-delhi-india-leading-indian-indian-playback-singer-k-hariharan-performing-at-qutub-festival-in-new-delhi-hariharan-has-sung-for-tamil-hindi-malayalam-kannada-marathi-bhojpuri-and-telugu-films-he-is-also-an-established-ghazal-singer-and-one-of-the-pioneers-of-indian-fusion-music-credit-image-ankit-agrawalzumapresscom-image658822545.html?imageid=94C2540C-BFC4-4FB5-AB8D-55956EB47E7C&pn=1&searchId=56c3db34c3e0e82448cc7ff4bd24b7b3&searchtype=0',
+      'image': 'https://th.bing.com/th/id/OIP.3Bm9ycvtgvx5Itt7l-Ik3gHaD5?w=342&h=180&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3',
     },
     {
       'name': 'Gujarati',
       'color': Color(0xFFD95185),
-      'image':
-          'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
+      'image': 'https://www.ajays.co.in/blog/wp-content/uploads/2024/05/Bhoomi-Trivedi.webp',
     },
     {
       'name': 'Bengali',
       'color': Color(0xFF4389D4),
       'image':
-          'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300',
+          'https://images.pexels.com/photos/7087168/pexels-photo-7087168.jpeg',
     },
     {
       'name': 'Kannada',
       'color': Color(0xFFC8102E),
-      'image':
-          'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300',
+      'image': 'https://th.bing.com/th/id/OIP.YNJA9tA05xa5VTMniJ8KZwHaHw?w=189&h=197&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3',
     },
   ];
   @override
@@ -103,7 +104,15 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                         color: genre['color'] as Color,
                         child: InkWell(
                           onTap: () {
-                            debugPrint('Selected ${genre['name']}');
+                            setState(() {
+                              final name = genre['name'] as String;
+
+                              if (selectedGenres.contains(name)) {
+                                selectedGenres.remove(name);
+                              } else {
+                                selectedGenres.add(name);
+                              }
+                            });
                           },
                           child: Stack(
                             children: [
@@ -140,6 +149,21 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                                   ),
                                 ),
                               ),
+                              if (selectedGenres.contains(genre['name']))
+                                const Positioned(
+                                  top: 8,
+                                  right: 8,
+                                  child: CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.black,
+                                    child: Icon(
+                                      Icons.check_circle,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
                             ],
                           ),
                         ),
@@ -148,6 +172,35 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                   },
                 ),
               ),
+              if (selectedGenres.length != 0) ...[
+                Center(
+                  child: SizedBox(
+                    height: 50,
+                    width: 90,
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUp7Screen(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Next",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ],
           ),
         ),
