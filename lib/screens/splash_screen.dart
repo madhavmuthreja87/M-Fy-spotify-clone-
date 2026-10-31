@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
 import 'package:sf/screens/home_screen.dart';
 import 'package:sf/screens/main_navigation.dart';
-
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -30,11 +30,11 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
           width: 600,
           onLoaded: (composition) {
             _c
-              ..duration =const Duration(milliseconds: 1750)
+              ..duration = const Duration(milliseconds: 1750)
               ..forward().whenComplete(() {
                 if (!mounted) return;
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) =>MainNavigation()),
+                  MaterialPageRoute(builder: (_) => SignUpScreen()),
                 );
               });
           },

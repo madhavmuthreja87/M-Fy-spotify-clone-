@@ -1,6 +1,9 @@
 import 'dart:developer';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
@@ -44,6 +47,16 @@ class TrackProvider extends ChangeNotifier {
   final Map<String, CancelToken> _downloadTokens = {};
   final Set<String> downloadingSongIds = {};
   int _playToken = 0;
+
+  String get userDocId {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      throw Exception('User not logged in');
+    }
+
+    return "${user.email!.split('@').first}__${user.uid.substring(0, 3)}";
+  }
 
   void addToQueue(TrackModel song) {
     queue.add(song);
@@ -233,6 +246,31 @@ class TrackProvider extends ChangeNotifier {
       'streamUrl': song.streamUrl,
       'playedAt': DateTime.now().millisecondsSinceEpoch,
     });
+
+    await saveSongToCloudRecents('recents', song);
+  }
+
+  Future<void> saveSongToCloudRecents(
+    String collection,
+    TrackModel song,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDocId)
+        .collection(collection)
+        .doc(song.id)
+        .set({
+          'id': song.id,
+          'title': song.title,
+          'artist': song.artist,
+          'duration': song.duration,
+          'is_streamable': song.isStreamable,
+          'artwork': song.artwork,
+          'playedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   Future<void> recordSongPlayedCount(TrackModel song) async {
@@ -348,7 +386,35 @@ class TrackProvider extends ChangeNotifier {
       'streamUrl': tm.streamUrl,
     });
     await playlistBox.put(pname, existing);
+
+    await saveSongToCloudPlaylist('playlists', pname, tm);
     notifyListeners();
+  }
+
+  Future<void> saveSongToCloudPlaylist(
+    String collection,
+    String pname,
+    TrackModel song,
+  ) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDocId)
+        .collection(collection)
+        .doc(pname)
+        .collection('songs')
+        .doc(song.id)
+        .set({
+          'id': song.id,
+          'title': song.title,
+          'artist': song.artist,
+          'duration': song.duration,
+          'is_streamable': song.isStreamable,
+          'artwork': song.artwork,
+          'playedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   Future<void> removeFromPlaylist(String pname, String songID) async {
