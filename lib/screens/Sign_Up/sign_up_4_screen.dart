@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/screens/Sign_Up/sign_up_5_screen.dart';
 
 class SignUp4Screen extends StatefulWidget {
   const new({super.key});
@@ -28,10 +31,11 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
       body: Padding(
         padding: EdgeInsets.all(18),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: 25),
             Text(
-              "What's you date of birth?",
+              "What's your gender?",
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 23,
@@ -53,13 +57,18 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
                     side: BorderSide(
                       color: selectedGender == 'Female'
                           ? const Color(0xFF1ED760)
-                          : Colors.grey,
+                          : const Color.fromARGB(255, 135, 135, 135),
                     ),
                   ),
                   onPressed: () {
                     setState(() {
                       selectedGender = 'Female';
                     });
+                    context.read<SignUpProvider>().setGender(selectedGender!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp5Screen()),
+                    );
                   },
                   child: const Text('Female'),
                 ),
@@ -82,6 +91,11 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
                     setState(() {
                       selectedGender = 'Male';
                     });
+                    context.read<SignUpProvider>().setGender(selectedGender!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp5Screen()),
+                    );
                   },
                   child: const Text('Male'),
                 ),
@@ -104,6 +118,11 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
                     setState(() {
                       selectedGender = 'Non-binary';
                     });
+                    context.read<SignUpProvider>().setGender(selectedGender!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp5Screen()),
+                    );
                   },
                   child: const Text('Non-binary'),
                 ),
@@ -130,6 +149,11 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
                     setState(() {
                       selectedGender = 'Other';
                     });
+                    context.read<SignUpProvider>().setGender(selectedGender!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp5Screen()),
+                    );
                   },
                   child: const Text('Other'),
                 ),
@@ -152,6 +176,11 @@ class _SignUp4ScreenState extends State<SignUp4Screen> {
                     setState(() {
                       selectedGender = 'Prefer not to say';
                     });
+                    context.read<SignUpProvider>().setGender(selectedGender!);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUp5Screen()),
+                    );
                   },
                   child: const Text('Prefer not to say'),
                 ),

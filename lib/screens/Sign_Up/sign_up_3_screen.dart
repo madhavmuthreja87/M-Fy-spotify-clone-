@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/screens/Sign_Up/sign_up_4_screen.dart';
 
 class SignUp3Screen extends StatefulWidget {
@@ -66,6 +68,7 @@ class _SignUp3ScreenState extends State<SignUp3Screen> {
                 child: TextButton(
                   style: TextButton.styleFrom(backgroundColor: Colors.white),
                   onPressed: () {
+                    context.read<SignUpProvider>().setDOB(selectedDate);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => SignUp4Screen()),

@@ -1,4 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sf/models/auth_model.dart';
+import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/screens/Sign_Up/sign_up_6_screen.dart';
+import 'package:sf/widgets/loading_screen.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SignUp5Screen extends StatefulWidget {
   const new({super.key});
@@ -9,6 +18,16 @@ class SignUp5Screen extends StatefulWidget {
 
 class _SignUp5ScreenState extends State<SignUp5Screen> {
   TextEditingController nameController = TextEditingController();
+
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    nameController.text = context.read<SignUpProvider>().email.split('@').first;
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -47,16 +66,21 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
                   SizedBox(
                     height: 60,
                     child: TextField(
-                      autofocus: true,
+                      // autofocus: true,
                       cursorColor: Colors.white,
                       controller: nameController,
 
                       textAlignVertical: TextAlignVertical.center,
 
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 21,
+                        fontWeight: FontWeight.w500,
+                      ),
                       cursorRadius: Radius.circular(20),
                       decoration: InputDecoration(
                         isDense: true,
+
                         border: InputBorder.none,
 
                         enabledBorder: InputBorder.none,
@@ -65,9 +89,10 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
 
                         fillColor: const Color.fromARGB(157, 158, 158, 158),
                         filled: true,
+
                         contentPadding: EdgeInsets.symmetric(
-                          horizontal: 4,
-                          vertical: 12,
+                          horizontal: 8,
+                          vertical: 8,
                         ),
                       ),
                     ),
@@ -120,7 +145,60 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.white,
                       ),
-                      onPressed: () {},
+                      onPressed: () async {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Loading()),
+                        );
+
+                        try {
+                          final signup = context.read<SignUpProvider>();
+                          final firebaseUser =
+                              FirebaseAuth.instance.currentUser;
+
+                          if (firebaseUser == null) {
+                            throw Exception('User not logged in');
+                          }
+
+                          final authmodel = AuthModel(
+                            UID: firebaseUser.uid,
+                            name: signup.name,
+                            email: signup.email,
+                            pic: signup.pic,
+                            gender: signup.gender,
+                            username: signup.email.split('@').first,
+                            dob: signup.dob ?? DateTime.now(),
+                            languages: signup.languages,
+                            artists: signup.artists,
+                            genres: signup.genres,
+                          );
+
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .doc(firebaseUser.uid)
+                              .set(authmodel.toMap());
+
+                          if (!context.mounted) return;
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SignUp6Screen(),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!context.mounted) return;
+
+                          Navigator.pop(context); // Close loading screen
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Failed to save profile: $e'),
+                            ),
+                          );
+                        }
+                      },
+
                       child: Text(
                         "Create account",
                         style: TextStyle(

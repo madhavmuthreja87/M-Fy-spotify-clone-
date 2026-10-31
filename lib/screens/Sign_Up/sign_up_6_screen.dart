@@ -16,53 +16,52 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
       'name': 'Hindi',
       'color': Color(0xFFE83E32),
 
-      'image': 'http://pnggallery.com/wp-content/uploads/arijit-singh-02.png',
+      'image': 'assets/images/hindi.png',
     },
     {
       'name': 'International',
       'color': Color(0xFFD98B19),
-      'image': 'https://freepngimg.com/thumb/justin_bieber/2-2-justin-bieber-png.png',
+      'image': 'assets/images/international.png',
     },
     {
       'name': 'Punjabi',
       'color': Color(0xFF94218A),
-      'image': 'https://www.vhv.rs/dpng/d/423-4235310_diljit-dosanjh-png-hd-background-diljit-dosanjh-tour.png',
+      'image': 'assets/images/punjabi.png',
     },
     {
       'name': 'Tamil',
       'color': Color(0xFFE5B95C),
-      'image': 'https://p7.hiclipart.com/preview/855/558/418/allu-arjun-tollywood-film-allu-arjun-png-clipart-thumbnail.jpg',
+      'image': 'assets/images/tamil.png',
     },
     {
       'name': 'Telugu',
       'color': Color(0xFF10C782),
-      'image': 'https://media.gettyimages.com/id/2179136683/photo/sydney-australia-ar-rahman-musical-composer-and-record-producer-speaks-during-a-conference-at.jpg?s=612x612&w=0&k=20&c=CwDCdUvs3ZIIoHTRH4lew6r1fP52AHPsW6kJOVu2HBw=',
+      'image': 'assets/images/telugu.png',
     },
     {
       'name': 'Malayalam',
       'color': Color(0xFFA3C6A8),
-      'image': 'https://a10.gaanacdn.com/gn_img/artists/BZgWoQOK2d/ZgWoQJorK2/size_m.jpg',
+      'image': 'assets/images/malayalam.png',
     },
     {
       'name': 'Marathi',
       'color': Color(0xFFA86D50),
-      'image': 'https://th.bing.com/th/id/OIP.3Bm9ycvtgvx5Itt7l-Ik3gHaD5?w=342&h=180&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3',
+      'image': 'assets/images/marathi.png',
     },
     {
       'name': 'Gujarati',
       'color': Color(0xFFD95185),
-      'image': 'https://www.ajays.co.in/blog/wp-content/uploads/2024/05/Bhoomi-Trivedi.webp',
+      'image': 'assets/images/gujarati.png',
     },
     {
       'name': 'Bengali',
       'color': Color(0xFF4389D4),
-      'image':
-          'https://images.pexels.com/photos/7087168/pexels-photo-7087168.jpeg',
+      'image': 'assets/images/bengali.png',
     },
     {
       'name': 'Kannada',
       'color': Color(0xFFC8102E),
-      'image': 'https://th.bing.com/th/id/OIP.YNJA9tA05xa5VTMniJ8KZwHaHw?w=189&h=197&c=7&r=0&o=7&dpr=1.4&pid=1.7&rm=3',
+      'image': 'assets/images/kannada.png',
     },
   ];
   @override
@@ -117,11 +116,11 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                           child: Stack(
                             children: [
                               Positioned(
-                                bottom: -15,
+                                bottom: -18,
                                 right: -20,
                                 width: 112,
                                 height: 100,
-                                child: Image.network(
+                                child: Image.asset(
                                   genre['image'] as String,
                                   fit: BoxFit.cover,
                                   alignment: Alignment.topCenter,

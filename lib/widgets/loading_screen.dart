@@ -10,7 +10,7 @@ class Loading extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Center(
         child: Lottie.asset(
-          'assets/loading_dark.json',
+          'assets/animations/loading_dark.json',
           width: 180,
           height: 180,
           fit: BoxFit.contain,

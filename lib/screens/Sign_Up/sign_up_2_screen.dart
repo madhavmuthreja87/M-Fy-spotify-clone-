@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/screens/Sign_Up/sign_up_3_screen.dart';
 import 'package:sf/providers/auth_provider.dart';
 import 'package:sf/widgets/loading_screen.dart';
@@ -109,23 +110,31 @@ class _SignUp2ScreenState extends State<SignUp2Screen> {
                   child: TextButton(
                     style: TextButton.styleFrom(backgroundColor: Colors.white),
                     onPressed: () async {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Loading(),
+                        ),
+                      );
+
+                      // Give Flutter time to display the loading screen
+                      await Future.delayed(const Duration(milliseconds: 100));
+
+                      if (!mounted) return;
+
+                      // Create account while Loading screen is visible
                       final success = await context.read<AuthProvider>().signUp(
                         widget.email,
                         passwordController.text.trim(),
                       );
+
                       if (!mounted) return;
 
+                      // Remove Loading screen
+                      Navigator.pop(context);
+
                       if (success) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Loading(),
-                          ),
-                        );
-
-                        await Future.delayed(const Duration(seconds: 2));
-
-                        if (!mounted) return;
+                        context.read<SignUpProvider>().setEmail(widget.email);
 
                         Navigator.pushReplacement(
                           context,
