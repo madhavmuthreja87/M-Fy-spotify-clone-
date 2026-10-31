@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:audio_service/audio_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:flutter/widgets.dart';
 import 'package:hive/hive.dart';
 import 'package:just_audio/just_audio.dart';
@@ -16,10 +16,7 @@ import 'package:sf/services/youtube_services.dart';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:hive/hive.dart';
-import 'package:flutter/widgets.dart';
 
-import 'package:sf/models/track_model.dart';
 import 'package:sf/services/download_service.dart';
 
 class TrackProvider extends ChangeNotifier {
@@ -351,7 +348,29 @@ class TrackProvider extends ChangeNotifier {
       'artwork': song.artwork,
       'streamUrl': song.streamUrl,
     });
+
+    await saveSongToCloudLiked('liked', song);
     notifyListeners();
+  }
+
+  Future<void> saveSongToCloudLiked(String collection, TrackModel song) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDocId)
+        .collection(collection)
+        .doc(song.id)
+        .set({
+          'id': song.id,
+          'title': song.title,
+          'artist': song.artist,
+          'duration': song.duration,
+          'is_streamable': song.isStreamable,
+          'artwork': song.artwork,
+          'playedAt': FieldValue.serverTimestamp(),
+        });
   }
 
   List<Map> likedSongs() =>
