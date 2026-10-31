@@ -175,7 +175,9 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
 
                           await FirebaseFirestore.instance
                               .collection('users')
-                              .doc(firebaseUser.uid)
+                              .doc(
+                                "${signup.email.split('@').first}__${firebaseUser.uid.substring(0, 3)}",
+                              )
                               .set(authmodel.toMap());
 
                           if (!context.mounted) return;

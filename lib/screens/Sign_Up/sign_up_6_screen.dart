@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/screens/Sign_Up/sign_up_7_screen.dart';
 
 class SignUp6Screen extends StatefulWidget {
@@ -181,6 +183,9 @@ class _SignUp6ScreenState extends State<SignUp6Screen> {
                         backgroundColor: Colors.white,
                       ),
                       onPressed: () {
+                        context.read<SignUpProvider>().setLanguages(
+                          selectedGenres.toList(),
+                        );
                         Navigator.push(
                           context,
                           MaterialPageRoute(

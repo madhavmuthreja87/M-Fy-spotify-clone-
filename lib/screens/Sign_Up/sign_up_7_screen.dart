@@ -133,7 +133,12 @@
 //   }
 // }
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:sf/models/auth_model.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/screens/Sign_Up/great_picks.dart';
 import 'package:sf/screens/Sign_Up/sign_up_8_screen.dart';
 
@@ -756,7 +761,38 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                   SizedBox(height: 8),
                   if (selectedArtists.length >= 3)
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
+                        context.read<SignUpProvider>().setArtists(
+                          selectedArtists.toList(),
+                        );
+
+                        final signup = context.read<SignUpProvider>();
+                        final firebaseUser = FirebaseAuth.instance.currentUser;
+
+                        if (firebaseUser == null) {
+                          throw Exception('User not logged in');
+                        }
+
+                        final authmodel = AuthModel(
+                          UID: firebaseUser.uid,
+                          name: signup.name,
+                          email: signup.email,
+                          pic: signup.pic,
+                          gender: signup.gender,
+                          username: signup.email.split('@').first,
+                          dob: signup.dob ?? DateTime.now(),
+                          languages: signup.languages,
+                          artists: signup.artists,
+                          genres: signup.genres,
+                        );
+
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(
+                              "${signup.email.split('@').first}__${firebaseUser.uid.substring(0, 3)}",
+                            )
+                            .set(authmodel.toMap());
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
