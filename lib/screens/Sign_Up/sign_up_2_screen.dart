@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:sf/screens/Sign_Up/sign_up_3_screen.dart';
+import 'package:sf/providers/auth_provider.dart';
+import 'package:sf/widgets/loading_screen.dart';
 
 class SignUp2Screen extends StatefulWidget {
-  const new({super.key});
+  final String email;
+  const SignUp2Screen({super.key, required this.email});
 
   @override
   State<SignUp2Screen> createState() => _SignUp2ScreenState();
@@ -10,6 +14,7 @@ class SignUp2Screen extends StatefulWidget {
 
 class _SignUp2ScreenState extends State<SignUp2Screen> {
   TextEditingController passwordController = TextEditingController();
+  bool hidepassword = true;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -51,19 +56,23 @@ class _SignUp2ScreenState extends State<SignUp2Screen> {
               ),
 
               SizedBox(
-                height: 40,
+                height: 45,
                 child: TextField(
                   autofocus: true,
                   cursorColor: Colors.white,
                   controller: passwordController,
-                  obscureText: true,
+                  obscureText: hidepassword,
 
                   textAlignVertical: TextAlignVertical.center,
 
                   style: TextStyle(color: Colors.white, fontSize: 16),
-
                   decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
+                    ),
                     isDense: true,
+
                     border: InputBorder.none,
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
@@ -71,7 +80,19 @@ class _SignUp2ScreenState extends State<SignUp2Screen> {
                     fillColor: const Color.fromARGB(157, 158, 158, 158),
                     filled: true,
 
-                    suffix: Icon(Icons.remove_red_eye),
+                    suffixIcon: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () {
+                        setState(() {
+                          hidepassword = !hidepassword;
+                        });
+                      },
+                      icon: Icon(
+                        size: 25,
+                        hidepassword ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -87,13 +108,32 @@ class _SignUp2ScreenState extends State<SignUp2Screen> {
                   height: 50,
                   child: TextButton(
                     style: TextButton.styleFrom(backgroundColor: Colors.white),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SignUp3Screen(),
-                        ),
+                    onPressed: () async {
+                      final success = await context.read<AuthProvider>().signUp(
+                        widget.email,
+                        passwordController.text.trim(),
                       );
+                      if (!mounted) return;
+
+                      if (success) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const Loading(),
+                          ),
+                        );
+
+                        await Future.delayed(const Duration(seconds: 2));
+
+                        if (!mounted) return;
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignUp3Screen(),
+                          ),
+                        );
+                      }
                     },
                     child: Text(
                       "Next",

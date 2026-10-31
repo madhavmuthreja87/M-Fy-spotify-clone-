@@ -1,5 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:sf/providers/auth_provider.dart';
+import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
 import 'package:sf/screens/Sign_Up/sign_up_6_screen.dart';
 import 'package:sf/screens/onboarding_screen.dart';
 import 'package:sf/screens/Sign_Up/sign_up_5_screen.dart';
@@ -45,8 +47,11 @@ void main() async {
     ),
   );
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => TrackProvider(handler),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => TrackProvider(handler)),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: MyApp(),
     ),
   );
@@ -58,7 +63,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SignUp6Screen(),
+      home: SignUpScreen(),
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFF121212),
         brightness: Brightness.dark,

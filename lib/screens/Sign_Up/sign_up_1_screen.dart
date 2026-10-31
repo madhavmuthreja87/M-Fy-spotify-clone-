@@ -95,7 +95,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => SignUp2Screen(),
+                            builder: (context) =>
+                                SignUp2Screen(email: emailController.text),
                           ),
                         );
                       },
