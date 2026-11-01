@@ -31,11 +31,12 @@ class _GreatPicksState extends State<GreatPicks> {
 
       if (!mounted) return;
 
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(
           builder: (context) => MainNavigation(), // Use your actual destination
         ),
+        (route) => false,
       );
     });
   }

@@ -343,75 +343,90 @@ class TrackProvider extends ChangeNotifier {
   }
 
   List<TrackModel> homeSongsList = [];
+
   Future<void> fetchInitialHomeSongs({
     required List<String> selectedArtists,
     required String selectedLanguages,
   }) async {
     log('INITIAL HOME RECOMMENDATIONS STARTED');
     log('Artists: $selectedArtists');
-    log('Languages: $selectedLanguages');
+    log('Language: $selectedLanguages');
 
+    if (mostPlayedBox.length >= 7) {
+      log('Using most played songs');
+      notifyListeners();
+      return;
+    }
+
+    final Map<String, TrackModel> uniqueSongs = {};
+
+    // Keep existing songs until new recommendations are fetched.
     try {
-      if (mostPlayedBox.length >= 7) {
-        log('Using most played songs');
-        notifyListeners();
-        return;
-      }
-
-      final Map<String, TrackModel> uniqueSongs = {};
-
-      // 2 songs from each of the first 3 artists
+      // Fetch 2 songs from each of the first 3 selected artists.
       for (final artist in selectedArtists.take(3)) {
-        final videos = await _ytService.searchFromYoutube(
-          '$artist popular songs',
-        );
+        try {
+          log('Searching songs for: $artist');
 
-        for (final video in videos.take(2)) {
-          uniqueSongs.putIfAbsent(
-            video.id.value,
-            () => TrackModel(
-              id: video.id.value,
-              title: video.title,
-              artist: video.author,
-              duration: video.duration?.inSeconds ?? 0,
-              isStreamable: 'true',
-              artwork: video.thumbnails.maxResUrl,
-              streamUrl: null,
-            ),
+          final videos = await _ytService.searchFromYoutube(
+            '$artist popular songs',
           );
-        }
-      }
 
-      // 1 song from the first selected language
-      if (selectedLanguages.isNotEmpty) {
-        final language = selectedLanguages;
-
-        final videos = await _ytService.searchFromYoutube(
-          '$language popular songs',
-        );
-
-        for (final video in videos) {
-          if (!uniqueSongs.containsKey(video.id.value)) {
-            uniqueSongs[video.id.value] = TrackModel(
-              id: video.id.value,
-              title: video.title,
-              artist: video.author,
-              duration: video.duration?.inSeconds ?? 0,
-              isStreamable: 'true',
-              artwork: video.thumbnails.maxResUrl,
-              streamUrl: null,
+          for (final video in videos.take(2)) {
+            uniqueSongs.putIfAbsent(
+              video.id.value,
+              () => TrackModel(
+                id: video.id.value,
+                title: video.title,
+                artist: video.author,
+                duration: video.duration?.inSeconds ?? 0,
+                isStreamable: 'true',
+                artwork: video.thumbnails.maxResUrl,
+                streamUrl: null,
+              ),
             );
-            break;
           }
+        } catch (e) {
+          log('Failed to fetch songs for $artist: $e');
+          continue;
         }
       }
 
-      homeSongsList = uniqueSongs.values.take(7).toList();
+      // Fetch 1 additional song from the selected language.
+      if (selectedLanguages.isNotEmpty) {
+        try {
+          log('Searching language: $selectedLanguages');
+
+          final videos = await _ytService.searchFromYoutube(
+            '$selectedLanguages popular songs',
+          );
+
+          for (final video in videos) {
+            if (!uniqueSongs.containsKey(video.id.value)) {
+              uniqueSongs[video.id.value] = TrackModel(
+                id: video.id.value,
+                title: video.title,
+                artist: video.author,
+                duration: video.duration?.inSeconds ?? 0,
+                isStreamable: 'true',
+                artwork: video.thumbnails.maxResUrl,
+                streamUrl: null,
+              );
+              break;
+            }
+          }
+        } catch (e) {
+          log('Language search failed: $e');
+        }
+      }
+
+      // Update only if at least one new song was found.
+      if (uniqueSongs.isNotEmpty) {
+        homeSongsList = uniqueSongs.values.take(7).toList();
+        notifyListeners();
+      }
 
       log('INITIAL HOME SONG COUNT: ${homeSongsList.length}');
       log('INITIAL HOME SONGS: ${homeSongsList.map((e) => e.title).toList()}');
-
-      notifyListeners();
     } catch (e, stack) {
       log('INITIAL HOME ERROR: $e', stackTrace: stack);
     }
