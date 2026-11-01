@@ -793,13 +793,14 @@ class _SignUp7ScreenState extends State<SignUp7Screen> {
                             )
                             .set(authmodel.toMap());
 
-                        Navigator.push(
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                             builder: (context) => GreatPicks(
                               selectedArtists: selectedArtistsData,
                             ),
                           ),
+                          (route) => false,
                         );
                       },
                       style: ElevatedButton.styleFrom(

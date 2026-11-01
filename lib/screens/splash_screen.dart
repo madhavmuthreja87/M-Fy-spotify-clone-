@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
 import 'package:sf/screens/home_screen.dart';
 import 'package:sf/screens/main_navigation.dart';
+import 'package:sf/screens/onboarding_screen.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -34,7 +35,7 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               ..forward().whenComplete(() {
                 if (!mounted) return;
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => SignUpScreen()),
+                  MaterialPageRoute(builder: (_) => OnboardingScreen()),
                 );
               });
           },

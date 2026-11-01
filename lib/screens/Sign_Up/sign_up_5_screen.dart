@@ -32,6 +32,7 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.transparent,
@@ -182,11 +183,12 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
 
                           if (!context.mounted) return;
 
-                          Navigator.pushReplacement(
+                          Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
                               builder: (context) => SignUp6Screen(),
                             ),
+                            (route) => false,
                           );
                         } catch (e) {
                           if (!context.mounted) return;

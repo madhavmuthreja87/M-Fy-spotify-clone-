@@ -136,11 +136,12 @@ class _SignUp2ScreenState extends State<SignUp2Screen> {
                       if (success) {
                         context.read<SignUpProvider>().setEmail(widget.email);
 
-                        Navigator.pushReplacement(
+                        Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(
                             builder: (context) => SignUp3Screen(),
                           ),
+                          (route) => false,
                         );
                       }
                     },
