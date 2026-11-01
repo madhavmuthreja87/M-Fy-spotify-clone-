@@ -104,6 +104,28 @@ class TrackProvider extends ChangeNotifier {
     await setSongAndPlay(_queue[currentQueueIndex]);
   }
 
+  Future<void> resetAllLocalMusicData() async {
+    await recentBox.clear();
+    await likedBox.clear();
+    await playlistBox.clear();
+    await mostPlayedBox.clear();
+    await downloadedSongsBox.clear();
+
+    homeSongsList.clear();
+    trendingSongsList.clear();
+    latestSongsList.clear();
+
+    currentSong = null;
+    currentQueueIndex = -1;
+    _queue.clear();
+
+    await player.stop();
+
+    notifyListeners();
+
+    log("ALL LOCAL MUSIC DATA CLEARED");
+  }
+
   Future<void> playPreviousInQueue() async {
     if (_queue.isEmpty) {
       log('PREVIOUS: Queue is empty');
@@ -320,6 +342,81 @@ class TrackProvider extends ChangeNotifier {
     return songs.take(7).toList();
   }
 
+  List<TrackModel> homeSongsList = [];
+  Future<void> fetchInitialHomeSongs({
+    required List<String> selectedArtists,
+    required String selectedLanguages,
+  }) async {
+    log('INITIAL HOME RECOMMENDATIONS STARTED');
+    log('Artists: $selectedArtists');
+    log('Languages: $selectedLanguages');
+
+    try {
+      if (mostPlayedBox.length >= 7) {
+        log('Using most played songs');
+        notifyListeners();
+        return;
+      }
+
+      final Map<String, TrackModel> uniqueSongs = {};
+
+      // 2 songs from each of the first 3 artists
+      for (final artist in selectedArtists.take(3)) {
+        final videos = await _ytService.searchFromYoutube(
+          '$artist popular songs',
+        );
+
+        for (final video in videos.take(2)) {
+          uniqueSongs.putIfAbsent(
+            video.id.value,
+            () => TrackModel(
+              id: video.id.value,
+              title: video.title,
+              artist: video.author,
+              duration: video.duration?.inSeconds ?? 0,
+              isStreamable: 'true',
+              artwork: video.thumbnails.highResUrl,
+              streamUrl: null,
+            ),
+          );
+        }
+      }
+
+      // 1 song from the first selected language
+      if (selectedLanguages.isNotEmpty) {
+        final language = selectedLanguages;
+
+        final videos = await _ytService.searchFromYoutube(
+          '$language popular songs',
+        );
+
+        for (final video in videos) {
+          if (!uniqueSongs.containsKey(video.id.value)) {
+            uniqueSongs[video.id.value] = TrackModel(
+              id: video.id.value,
+              title: video.title,
+              artist: video.author,
+              duration: video.duration?.inSeconds ?? 0,
+              isStreamable: 'true',
+              artwork: video.thumbnails.highResUrl,
+              streamUrl: null,
+            );
+            break;
+          }
+        }
+      }
+
+      homeSongsList = uniqueSongs.values.take(7).toList();
+
+      log('INITIAL HOME SONG COUNT: ${homeSongsList.length}');
+      log('INITIAL HOME SONGS: ${homeSongsList.map((e) => e.title).toList()}');
+
+      notifyListeners();
+    } catch (e, stack) {
+      log('INITIAL HOME ERROR: $e', stackTrace: stack);
+    }
+  }
+
   List<Map> recentSongs() {
     final songs = recentBox.values
         .map((s) => Map<String, dynamic>.from(s))
@@ -449,22 +546,22 @@ class TrackProvider extends ChangeNotifier {
   List<Map> songsOfPlaylist(String pname) =>
       List<Map>.from(playlistBox.get(pname, defaultValue: <Map>[]));
 
-  Future<void> addTemporaryMostPlayedData() async {
-    await mostPlayedBox.clear();
-    for (int i = 1; i <= 7; i++) {
-      await mostPlayedBox.put('song$i', {
-        'id': 'song$i',
-        'title': 'Test Song $i',
-        'artist': 'Artist $i',
-        'duration': 200,
-        'is_streamable': 'true',
-        'artwork': 'https://picsum.photos/300?$i',
-        'streamUrl': 'https://example.com/song$i.mp3',
-        'playCount': i == 7 ? 2 : 1,
-      });
-    }
-    notifyListeners();
-  }
+  // Future<void> addTemporaryMostPlayedData() async {
+  //   await mostPlayedBox.clear();
+  //   for (int i = 1; i <= 7; i++) {
+  //     await mostPlayedBox.put('song$i', {
+  //       'id': 'song$i',
+  //       'title': 'Test Song $i',
+  //       'artist': 'Artist $i',
+  //       'duration': 200,
+  //       'is_streamable': 'true',
+  //       'artwork': 'https://picsum.photos/300?$i',
+  //       'streamUrl': 'https://example.com/song$i.mp3',
+  //       'playCount': i == 7 ? 2 : 1,
+  //     });
+  //   }
+  //   notifyListeners();
+  // }
 
   /// Returns true only if the saved audio file still exists.
   Future<bool> isDownloaded(String songId) async {

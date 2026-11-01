@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/providers/track_provider.dart';
+
 import 'package:sf/screens/main_navigation.dart';
 
 class GreatPicks extends StatefulWidget {
@@ -14,10 +19,23 @@ class _GreatPicksState extends State<GreatPicks> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(milliseconds: 1500), () {
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final signup = context.read<SignUpProvider>();
+      final track = context.read<TrackProvider>();
+
+      await track.fetchInitialHomeSongs(
+        selectedArtists: signup.artists,
+        selectedLanguages: signup.languages.first,
+      );
+
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainNavigation()),
+        MaterialPageRoute(
+          builder: (context) => MainNavigation(), // Use your actual destination
+        ),
       );
     });
   }

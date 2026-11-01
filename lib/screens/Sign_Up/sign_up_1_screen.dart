@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:sf/providers/track_provider.dart';
+
 import 'package:sf/screens/Sign_Up/sign_up_2_screen.dart';
 import 'package:sf/screens/logi_in_screen.dart';
 
@@ -40,6 +44,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     final tracker = context.read<TrackProvider>();
+
+                  //     await tracker.resetAllLocalMusicData();
+
+                  //     print("RECENT: ${tracker.recentSongs()}");
+                  //     print("MOST PLAYED: ${tracker.mostPlayedSong()}");
+                  //     print("LIKED: ${tracker.likedSongs()}");
+
+                  //     print(
+                  //       "HOME: ${tracker.homeSongsList.map((s) => s.title).toList()}",
+                  //     );
+                  //   },
+                  //   child: const Text("RESET ALL LOCAL DATA"),
+                  // ),
                   Text(
                     "What's your email address?",
                     style: TextStyle(

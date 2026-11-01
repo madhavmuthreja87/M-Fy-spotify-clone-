@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/providers/track_provider.dart';
 import 'package:sf/screens/home_screen.dart';
 import 'package:sf/screens/library_screen.dart';
@@ -15,17 +16,24 @@ class MainNavigation extends StatefulWidget {
 }
 
 class _MainNavigationState extends State<MainNavigation> {
-  final List<Widget> screens = const [
-    HomeScreen(),
-    SearchScreen(),
-    LibraryScreen(),
-    DownloadsScreen(),
-  ];
-
   int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final sign = context.watch<SignUpProvider>();
+
+    print("SELECTED ARTISTS: ${sign.artists}");
+    print("SELECTED LANGUAGE: ${sign.languages}");
+    final List<Widget> screens = [
+      HomeScreen(
+        selectedArtists: sign.artists,
+        selectedLanguage: sign.languages.toString(),
+      ),
+      SearchScreen(),
+      LibraryScreen(),
+      DownloadsScreen(),
+    ];
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.black,
