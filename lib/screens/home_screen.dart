@@ -33,11 +33,11 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final tracker = context.read<TrackProvider>();
 
-      // // Fetch personalised songs
-      // tracker.fetchInitialHomeSongs(
-      //   selectedArtists: widget.selectedArtists,
-      //   selectedLanguages: widget.selectedLanguage,
-      // );
+      // Fetch personalised songs
+      tracker.fetchInitialHomeSongs(
+        selectedArtists: widget.selectedArtists,
+        selectedLanguages: widget.selectedLanguage,
+      );
 
       // Fetch trending songs
       tracker.fetchTrendingSongs();
@@ -248,34 +248,40 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Row(
                             children: [
                               // SONG IMAGE
+
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(5),
-
-                                child: CachedNetworkImage(
-                                  imageUrl: song.artwork ?? '',
-                                  fit: BoxFit.cover,
-                                  height: 51,
+                                child: SizedBox(
                                   width: 51,
+                                  height: 51,
+                                  child: Transform.scale(
+                                    scale: 1.2,
+                                    child: CachedNetworkImage(
+                                      imageUrl: song.artwork ?? '',
+                                      width: 150,
+                                      height: 150,
+                                      fit: BoxFit.cover,
 
-                                  errorWidget: (context, url, error) =>
-                                      Container(
-                                        color: const Color.fromARGB(
-                                          225,
-                                          160,
-                                          160,
-                                          160,
-                                        ),
+                                      errorWidget: (context, url, error) =>
+                                          Container(
+                                            color: const Color.fromARGB(
+                                              225,
+                                              160,
+                                              160,
+                                              160,
+                                            ),
 
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.music_note,
-                                            color: Colors.white,
+                                            child: const Center(
+                                              child: Icon(
+                                                Icons.music_note,
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-
                               const SizedBox(width: 8),
 
                               // SONG TITLE

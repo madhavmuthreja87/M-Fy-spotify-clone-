@@ -375,7 +375,7 @@ class TrackProvider extends ChangeNotifier {
               artist: video.author,
               duration: video.duration?.inSeconds ?? 0,
               isStreamable: 'true',
-              artwork: video.thumbnails.highResUrl,
+              artwork: video.thumbnails.maxResUrl,
               streamUrl: null,
             ),
           );
@@ -398,7 +398,7 @@ class TrackProvider extends ChangeNotifier {
               artist: video.author,
               duration: video.duration?.inSeconds ?? 0,
               isStreamable: 'true',
-              artwork: video.thumbnails.highResUrl,
+              artwork: video.thumbnails.maxResUrl,
               streamUrl: null,
             );
             break;
