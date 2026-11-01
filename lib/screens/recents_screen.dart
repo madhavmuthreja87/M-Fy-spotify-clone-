@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -23,7 +24,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
 
   bool isSearching = false;
   bool hasSearched = false; // true after the first submitted search
-
+  Timer? _debounce;
   @override
   void dispose() {
     searchController.dispose();
@@ -277,17 +278,22 @@ class _RecentsScreenState extends State<RecentsScreen> {
               ),
               // Clearing the box brings the Recents list back.
               onChanged: (value) {
-                searchYoutube(value);
-                if (value.trim().isEmpty &&
-                    (hasSearched || searchResult.isNotEmpty)) {
+                _debounce?.cancel();
+                if (value.trim().isEmpty) {
                   setState(() {
                     searchResult = [];
                     hasSearched = false;
                     isSearching = false;
                   });
+                  return;
                 }
+
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  searchYoutube(value);
+                });
               },
               onSubmitted: (value) {
+                _debounce?.cancel();
                 searchYoutube(value);
               },
             ),
