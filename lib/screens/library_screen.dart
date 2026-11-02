@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/services/audis_api.dart';
 import 'package:sf/providers/track_provider.dart';
 import 'package:sf/screens/create_playlist.dart';
@@ -316,72 +317,109 @@ class _LibraryScreenState extends State<LibraryScreen> {
                       );
                     },
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    hoverColor: Colors.green,
-                    leading: CircleAvatar(
-                      child: Icon(Icons.person),
-                      radius: 25,
-                    ),
-                    title: Text(
-                      "Karan Aujhla",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    subtitle: Row(
-                      children: [
-                        Text(
-                          "Artist",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 159, 159, 159),
-                          ),
-                        ),
-                      ],
-                    ),
+                  Consumer<SignUpProvider>(
+                    builder: (context, provider, child) {
+                      final artists = provider.artistsList();
+
+                      return ListView.builder(
+                        itemCount: artists.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          final artistElement = artists[index];
+
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            hoverColor: Colors.green,
+                            leading: const CircleAvatar(
+                              radius: 25,
+                              child: Icon(Icons.person_3),
+                            ),
+                            title: Text(
+                              artistElement['name'] ?? '',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              "Artist",
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 159, 159, 159),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
                   ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    hoverColor: Colors.green,
-                    leading: CircleAvatar(
-                      child: Icon(Icons.person_2),
-                      radius: 25,
-                    ),
-                    title: Text(
-                      "Paradox",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    subtitle: Row(
-                      children: [
-                        Text(
-                          "Artist",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 159, 159, 159),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    hoverColor: Colors.green,
-                    leading: CircleAvatar(
-                      child: Icon(Icons.person_3),
-                      radius: 25,
-                    ),
-                    title: Text(
-                      "Shubh",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
-                    ),
-                    subtitle: Row(
-                      children: [
-                        Text(
-                          "Artist",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 159, 159, 159),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // ListTile(
+                  //   contentPadding: EdgeInsets.zero,
+                  //   hoverColor: Colors.green,
+                  //   leading: CircleAvatar(
+                  //     child: Icon(Icons.person),
+                  //     radius: 25,
+                  //   ),
+                  //   title: Text(
+                  //     "Karan Aujhla",
+                  //     style: TextStyle(color: Colors.white, fontSize: 18),
+                  //   ),
+                  //   subtitle: Row(
+                  //     children: [
+                  //       Text(
+                  //         "Artist",
+                  //         style: TextStyle(
+                  //           color: const Color.fromARGB(255, 159, 159, 159),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // ListTile(
+                  //   contentPadding: EdgeInsets.zero,
+                  //   hoverColor: Colors.green,
+                  //   leading: CircleAvatar(
+                  //     child: Icon(Icons.person_2),
+                  //     radius: 25,
+                  //   ),
+                  //   title: Text(
+                  //     "Paradox",
+                  //     style: TextStyle(color: Colors.white, fontSize: 18),
+                  //   ),
+                  //   subtitle: Row(
+                  //     children: [
+                  //       Text(
+                  //         "Artist",
+                  //         style: TextStyle(
+                  //           color: const Color.fromARGB(255, 159, 159, 159),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // ListTile(
+                  //   contentPadding: EdgeInsets.zero,
+                  //   hoverColor: Colors.green,
+                  //   leading: CircleAvatar(
+                  //     child: Icon(Icons.person_3),
+                  //     radius: 25,
+                  //   ),
+                  //   title: Text(
+                  //     "Shubh",
+                  //     style: TextStyle(color: Colors.white, fontSize: 18),
+                  //   ),
+                  //   subtitle: Row(
+                  //     children: [
+                  //       Text(
+                  //         "Artist",
+                  //         style: TextStyle(
+                  //           color: const Color.fromARGB(255, 159, 159, 159),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
+                  // Consumer<SignUpProvider>(builder: builder),
                 ],
               ),
             ),

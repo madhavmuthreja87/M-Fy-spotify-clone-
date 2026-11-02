@@ -288,7 +288,7 @@ class _RecentsScreenState extends State<RecentsScreen> {
                   return;
                 }
 
-                _debounce = Timer(const Duration(milliseconds: 500), () {
+                _debounce = Timer(const Duration(milliseconds: 350), () {
                   searchYoutube(value);
                 });
               },

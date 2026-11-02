@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class SignUpProvider extends ChangeNotifier {
   String name = '';
@@ -12,6 +13,8 @@ class SignUpProvider extends ChangeNotifier {
   List<String> languages = [];
   List<String> artists = [];
   List<String> genres = [];
+
+  final Box artistsBox = Hive.box("artistsBox");
 
   void setName(String value) {
     name = value;
@@ -48,10 +51,16 @@ class SignUpProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setArtists(List<String> value) {
+  Future<void> setArtists(List<String> value) async {
     artists = value;
+    for (String v in value) {
+      await artistsBox.put(v, {'name': v});
+    }
     notifyListeners();
   }
+
+  List<Map> artistsList() =>
+      artistsBox.values.map((a) => Map<String, dynamic>.from(a)).toList();
 
   void setGenres(List<String> value) {
     genres = value;
