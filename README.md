@@ -31,7 +31,7 @@ Download:
 Download the latest Android APK from the Releases section of this GitHub repository.
 
 Version:
-Current Release: v1.0.0
+Current Release: v1.1.0
 
 Disclaimer:
 mfy is an independent music player project inspired by modern music streaming applications. It is not affiliated with, endorsed by, or associated with Spotify.
