@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -15,6 +17,40 @@ class SignUpProvider extends ChangeNotifier {
   List<String> genres = [];
 
   final Box artistsBox = Hive.box("artistsBox");
+
+  Future<void> restoreProfileFromCloud() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || user.email == null) {
+      throw Exception('User not logged in');
+    }
+
+    final userDocId =
+        '${user.email!.split('@').first}__${user.uid.substring(0, 3)}';
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDocId)
+        .get();
+
+    if (!snapshot.exists) {
+      throw Exception('User document not found');
+    }
+
+    final data = snapshot.data()!;
+
+    final List<String> cloudArtists = List<String>.from(data['artists'] ?? []);
+
+    await artistsBox.clear();
+
+    for (final artist in cloudArtists) {
+      await artistsBox.put(artist, {"name": artist});
+    }
+
+    artists = cloudArtists;
+
+    notifyListeners();
+  }
 
   void setName(String value) {
     name = value;

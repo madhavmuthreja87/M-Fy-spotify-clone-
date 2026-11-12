@@ -253,6 +253,65 @@ class TrackProvider extends ChangeNotifier {
   }
 
   // --- REST UNCHANGED ---
+  Future<void> restoreMusicDataFromCloud() async {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userDocId);
+
+    // ---------------- RECENT SONGS ----------------
+
+    final recentSnapshot = await userRef.collection('recents').get();
+
+    await recentBox.clear();
+
+    for (final doc in recentSnapshot.docs) {
+      final data = doc.data();
+
+      final playedAt = data['playedAt'];
+
+      await recentBox.put(doc.id, {
+        'id': data['id'] ?? doc.id,
+        'title': data['title'],
+        'artist': data['artist'],
+        'duration': data['duration'],
+        'is_streamable': data['is_streamable'],
+        'artwork': data['artwork'],
+        'streamUrl': data['streamUrl'],
+        'playedAt': playedAt is Timestamp
+            ? playedAt.millisecondsSinceEpoch
+            : DateTime.now().millisecondsSinceEpoch,
+      });
+    }
+
+    notifyListeners();
+    log('Recent songs restored: ${recentBox.length}');
+
+    // --------------- Liked Songs --------------------------
+    final likedSnapshot = await userRef.collection('liked').get();
+
+    await likedBox.clear();
+
+    for (final doc in likedSnapshot.docs) {
+      final data = doc.data();
+
+      await likedBox.put(doc.id, {
+        'id': data['id'] ?? doc.id,
+        'title': data['title'],
+        'artist': data['artist'],
+        'duration': data['duration'],
+        'is_streamable': data['is_streamable'],
+        'artwork': data['artwork'],
+        'streamUrl': data['streamUrl'],
+      });
+    }
+
+    notifyListeners();
+    log('Liked songs restored: ${likedBox.length}');
+
+    //--------------- playList Songs -------------------------
+    // final mostPlayedSnapshot=await userRef.collection('most')
+  }
+
   Future<void> saveRecentSongs(TrackModel song) async {
     await recentBox.delete(song.id);
     await recentBox.put(song.id, {

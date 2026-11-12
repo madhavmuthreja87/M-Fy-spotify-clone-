@@ -329,6 +329,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           final artistElement = artists[index];
 
                           return ListTile(
+                            onTap: ()
+                            {
+                              
+                            },
                             contentPadding: EdgeInsets.zero,
                             hoverColor: Colors.green,
                             leading: const CircleAvatar(

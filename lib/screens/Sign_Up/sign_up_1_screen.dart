@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:sf/providers/track_provider.dart';
+import 'package:sf/screens/Log_In/logi_in_screen.dart';
 
 import 'package:sf/screens/Sign_Up/sign_up_2_screen.dart';
-import 'package:sf/screens/logi_in_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const new({super.key});

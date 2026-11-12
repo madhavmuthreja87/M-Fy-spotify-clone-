@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sf/screens/logi_in_screen.dart';
+import 'package:sf/screens/Log_In/logi_in_screen.dart';
+
 import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {

@@ -5,7 +5,14 @@ class AuthService {
 
   Future<UserCredential> SignUp(String email, String password) async {
     return await _auth.createUserWithEmailAndPassword(
-      email: email,
+      email: email.trim(),
+      password: password,
+    );
+  }
+
+  Future<UserCredential> logIn(String email, String password) async {
+    return await _auth.signInWithEmailAndPassword(
+      email: email.trim(),
       password: password,
     );
   }

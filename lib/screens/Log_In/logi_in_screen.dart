@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sf/screens/Log_In/log_in_2_screen.dart';
 import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
 
 class LogiInScreen extends StatefulWidget {
@@ -81,7 +82,15 @@ class _LogiInScreenState extends State<LogiInScreen> {
                           101,
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                LogIn2Screen(email: emailController.text),
+                          ),
+                        );
+                      },
                       child: Text(
                         "Continue",
                         style: TextStyle(
