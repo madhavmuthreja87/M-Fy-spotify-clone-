@@ -1,7 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
-import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
-import 'package:sf/screens/home_screen.dart';
+
 import 'package:sf/screens/main_navigation.dart';
 import 'package:sf/screens/onboarding_screen.dart';
 
@@ -13,6 +13,14 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
   late final AnimationController _c = AnimationController(vsync: this);
+
+  late final User? user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+  }
 
   @override
   void dispose() {
@@ -35,7 +43,10 @@ class _SplashPageState extends State<SplashPage> with TickerProviderStateMixin {
               ..forward().whenComplete(() {
                 if (!mounted) return;
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => OnboardingScreen()),
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        user == null ? OnboardingScreen() : MainNavigation(),
+                  ),
                 );
               });
           },
