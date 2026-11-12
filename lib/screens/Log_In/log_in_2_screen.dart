@@ -149,13 +149,13 @@ class _LogIn2ScreenState extends State<LogIn2Screen> {
                           if (!mounted) return;
 
                           // STEP 4: Get restored preferences.
-                          final artists = context
-                              .read<SignUpProvider>()
-                              .artists;
+                          // final artists = context
+                          //     .read<SignUpProvider>()
+                          //     .artists;
 
-                          final languages = context
-                              .read<SignUpProvider>()
-                              .languages;
+                          // final languages = context
+                          //     .read<SignUpProvider>()
+                          //     .languages;
 
                           // STEP 5: Remove Loading screen and navigate Home.
                           Navigator.pushAndRemoveUntil(

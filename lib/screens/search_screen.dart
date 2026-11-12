@@ -142,6 +142,16 @@ class _SearchScreenState extends State<SearchScreen> {
                               ),
                             ),
                           ),
+                          Positioned(
+                            right: -17,
+                            bottom: -17,
+                            child: Image.asset(
+                              'assets/images/p1.png',
+                              width: 105,
+                              height: 75,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
                         ],
                       ),
                       Stack(
@@ -149,7 +159,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              color: const Color.fromARGB(255, 103, 187, 106),
+                              color: const Color.fromARGB(255, 1, 97, 5),
                             ),
                           ),
                           Positioned(
@@ -162,6 +172,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                               ),
+                            ),
+                          ),
+                          Positioned(
+                            right: -24,
+                            bottom: -20,
+                            child: Image.asset(
+                              'assets/images/p2.png',
+                              width: 105,
+                              height: 75,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ],
@@ -181,9 +201,19 @@ class _SearchScreenState extends State<SearchScreen> {
                               "Live\nEvents",
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 18,
+                                fontSize: 17,
                                 fontWeight: FontWeight.w800,
                               ),
+                            ),
+                          ),
+                          Positioned(
+                            right: -20,
+                            bottom: -20,
+                            child: Image.asset(
+                              'assets/images/p3.png',
+                              width: 105,
+                              height: 75,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ],
@@ -206,6 +236,16 @@ class _SearchScreenState extends State<SearchScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.w800,
                               ),
+                            ),
+                          ),
+                          Positioned(
+                            right: -24,
+                            bottom: -20,
+                            child: Image.asset(
+                              'assets/images/p4.png',
+                              width: 105,
+                              height: 75,
+                              fit: BoxFit.contain,
                             ),
                           ),
                         ],
