@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/screens/settings_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
   const CustomDrawer({super.key});
@@ -41,7 +42,7 @@ class CustomDrawer extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         Text(
                           displayName,
@@ -51,7 +52,7 @@ class CustomDrawer extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 4),
+
                         // Text(
                         //   user.email,
                         //   style: const TextStyle(
@@ -59,7 +60,6 @@ class CustomDrawer extends StatelessWidget {
                         //     fontSize: 12,
                         //   ),
                         // ),
-                        const SizedBox(height: 5),
                         const Text(
                           'View profile',
                           style: TextStyle(
@@ -100,7 +100,10 @@ class CustomDrawer extends StatelessWidget {
               Icons.settings_sharp,
               'Settings and privacy',
               () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsScreen()),
+                );
                 // Navigate to RecentsScreen
               },
             ),

@@ -43,4 +43,8 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> logout() async {
+    await authService.logOut();
+  }
 }

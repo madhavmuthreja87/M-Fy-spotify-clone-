@@ -104,7 +104,7 @@ class TrackProvider extends ChangeNotifier {
     await setSongAndPlay(_queue[currentQueueIndex]);
   }
 
-  Future<void> resetAllLocalMusicData() async {
+  Future<void> clearLocalMusicData() async {
     await recentBox.clear();
     await likedBox.clear();
     await playlistBox.clear();

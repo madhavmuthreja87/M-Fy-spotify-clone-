@@ -102,4 +102,20 @@ class SignUpProvider extends ChangeNotifier {
     genres = value;
     notifyListeners();
   }
+
+  Future<void> clearUserProfile() async {
+    name = '';
+    email = '';
+    username = '';
+    pic = '';
+    gender = '';
+    dob = null;
+
+    languages = [];
+    artists = [];
+    genres = [];
+
+    await artistsBox.clear();
+    notifyListeners();
+  }
 }
