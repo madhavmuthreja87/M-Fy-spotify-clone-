@@ -154,6 +154,9 @@ class _SignUp5ScreenState extends State<SignUp5Screen> {
 
                         try {
                           final signup = context.read<SignUpProvider>();
+                          signup.setName(nameController.text.trim());
+                          signup.setUsetname(nameController.text.trim());
+
                           final firebaseUser =
                               FirebaseAuth.instance.currentUser;
 

@@ -24,10 +24,12 @@ class _MainNavigationState extends State<MainNavigation> {
 
     print("SELECTED ARTISTS: ${sign.artists}");
     print("SELECTED LANGUAGE: ${sign.languages}");
+    print("UserName : ${sign.username}");
     final List<Widget> screens = [
       HomeScreen(
         selectedArtists: sign.artists,
         selectedLanguage: sign.languages.toString(),
+        name: sign.username,
       ),
       SearchScreen(),
       LibraryScreen(),

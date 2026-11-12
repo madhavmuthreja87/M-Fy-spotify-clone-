@@ -3,19 +3,23 @@ import 'dart:developer';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sf/providers/sign_up_provider.dart';
 
 import 'package:sf/providers/track_provider.dart';
 import 'package:sf/models/track_model.dart';
+import 'package:sf/screens/custom_drawer.dart';
 import 'package:sf/screens/liked_songs.dart';
 
 class HomeScreen extends StatefulWidget {
   final List<String> selectedArtists;
   final String selectedLanguage;
+  final String name;
 
   const HomeScreen({
     super.key,
     required this.selectedArtists,
     required this.selectedLanguage,
+    required this.name,
   });
 
   @override
@@ -29,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     print("HOME ARTISTS: ${widget.selectedArtists}");
     print("HOME LANGUAGE: ${widget.selectedLanguage}");
+    print("Name: ${widget.name}");
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final tracker = context.read<TrackProvider>();
@@ -85,6 +90,52 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF121212),
+      drawer: CustomDrawer(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF121212),
+        titleSpacing: 0,
+
+        title: Row(
+          children: [
+            // PROFILE ICON - OPENS DRAWER
+            Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: CircleAvatar(
+                    backgroundColor: const Color.fromARGB(255, 236, 175, 85),
+
+                    child: Text(
+                      widget.name.isNotEmpty
+                          ? widget.name[0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 1),
+
+            _filterChip("All"),
+            const SizedBox(width: 10),
+
+            _filterChip("Music"),
+            const SizedBox(width: 10),
+
+            _filterChip("Podcasts"),
+          ],
+        ),
+      ),
 
       body: SafeArea(
         child: Padding(
@@ -94,26 +145,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // TOP FILTERS
-                Row(
-                  children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.orange,
-                      child: Text("M"),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    _filterChip("All"),
-                    const SizedBox(width: 10),
-
-                    _filterChip("Music"),
-                    const SizedBox(width: 10),
-
-                    _filterChip("Podcasts"),
-                  ],
-                ),
-
                 const SizedBox(height: 10),
 
                 // HOME SONG GRID
@@ -538,13 +569,20 @@ class _HomeScreenState extends State<HomeScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.green,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
       ),
 
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
 
       child: Center(
-        child: Text(title, style: const TextStyle(color: Colors.black)),
+        child: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
