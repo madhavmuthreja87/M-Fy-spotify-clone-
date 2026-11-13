@@ -11,16 +11,13 @@ import 'package:sf/models/track_model.dart';
 class PlayerScreen extends StatefulWidget {
   final TrackModel song;
 
-  // final VoidCallback onPlayPause;
-
   const PlayerScreen({super.key, required this.song});
 
   @override
   State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
-class _PlayerScreenState extends State<PlayerScreen>
-    with SingleTickerProviderStateMixin {
+class _PlayerScreenState extends State<PlayerScreen> {
   String FormatDuration(Duration duration) {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
@@ -30,13 +27,56 @@ class _PlayerScreenState extends State<PlayerScreen>
 
   Color backgroundColor = Colors.black;
 
-  Future<void> getBackgroundColor(String? artwork) async {
-    if (artwork == null || artwork.isEmpty) return;
+  late TrackProvider _tracker;
+  String? _lastSongId;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _tracker = context.read<TrackProvider>();
+
+    // Get the currently playing song.
+    final initialSong = _tracker.currentSong ?? widget.song;
+
+    _lastSongId = initialSong.id;
+
+    // Listen for queue song changes.
+    _tracker.addListener(_onTrackChanged);
+
+    // Extract initial song color.
+    getBackgroundColor(initialSong.artwork, initialSong.id);
+  }
+
+  // Called whenever TrackProvider notifies listeners.
+  void _onTrackChanged() {
+    final currentSong = _tracker.currentSong;
+
+    if (currentSong == null) return;
+
+    // Only extract color when the song actually changes.
+    if (currentSong.id == _lastSongId) return;
+
+    _lastSongId = currentSong.id;
+
+    getBackgroundColor(currentSong.artwork, currentSong.id);
+  }
+
+  // Extract artwork color safely.
+  Future<void> getBackgroundColor(String? artwork, String songId) async {
+    if (artwork == null || artwork.isEmpty) {
+      if (!mounted || _lastSongId != songId) return;
+
+      setState(() {
+        backgroundColor = const Color(0xFF191414);
+      });
+      return;
+    }
 
     try {
       final palette = await PaletteGenerator.fromImageProvider(
-        NetworkImage(artwork),
-        maximumColorCount: 24,
+        CachedNetworkImageProvider(artwork),
+        maximumColorCount: 8,
       );
 
       final selectedColor =
@@ -46,13 +86,16 @@ class _PlayerScreenState extends State<PlayerScreen>
           palette.dominantColor?.color ??
           const Color(0xFF191414);
 
-      if (!mounted) return;
+      // Ignore results belonging to an older song.
+      if (!mounted || _lastSongId != songId) return;
 
       setState(() {
         backgroundColor = selectedColor;
       });
     } catch (e) {
-      if (!mounted) return;
+      if (!mounted || _lastSongId != songId) return;
+
+      log("Palette extraction error: $e");
 
       setState(() {
         backgroundColor = const Color(0xFF191414);
@@ -61,40 +104,33 @@ class _PlayerScreenState extends State<PlayerScreen>
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    getBackgroundColor(widget.song.artwork);
+  void dispose() {
+    _tracker.removeListener(_onTrackChanged);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final tracker = context.watch<TrackProvider>();
     final player = tracker.player;
-    final currentSong = tracker.currentSong;
-    bool isLiked = tracker.likedSongs().any(
-      (song) => song['id'] == widget.song.id,
+
+    // Always display the currently playing queue song.
+    final currentSong = tracker.currentSong ?? widget.song;
+
+    final isLiked = tracker.likedSongs().any(
+      (song) => song['id'] == currentSong.id,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        getBackgroundColor(currentSong!.artwork!);
-      }
-    });
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.black,
 
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: const Color.fromARGB(255, 255, 255, 255),
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         titleSpacing: 0,
         backgroundColor: Colors.transparent,
-
         centerTitle: true,
-        title: Text(
+        title: const Text(
           "Recommended for you",
           style: TextStyle(
             color: Colors.white,
@@ -102,15 +138,16 @@ class _PlayerScreenState extends State<PlayerScreen>
             fontWeight: FontWeight.w600,
           ),
         ),
-        actions: [
+        actions: const [
           Padding(
-            padding: const EdgeInsets.only(right: 8.0),
+            padding: EdgeInsets.only(right: 8.0),
             child: Icon(Icons.more_vert),
           ),
         ],
       ),
+
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 450),
+        duration: const Duration(milliseconds: 350),
         curve: Curves.easeInOut,
         height: double.infinity,
         width: double.infinity,
@@ -121,11 +158,12 @@ class _PlayerScreenState extends State<PlayerScreen>
             colors: [
               backgroundColor,
               Color.lerp(backgroundColor, const Color(0xFF191414), 0.65)!,
-              const Color(0xFF000000),
+              Colors.black,
             ],
             stops: const [0.0, 0.55, 1.0],
           ),
         ),
+
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 5),
@@ -134,6 +172,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 40),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -143,27 +182,23 @@ class _PlayerScreenState extends State<PlayerScreen>
                         borderOnForeground: true,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          // child: Image.network(
-                          //   widget.song.artwork!,
-                          //   fit: BoxFit.cover,
-                          //   height: 320,
-                          //   width: 340,
-                          // ),
                           child: CachedNetworkImage(
-                            imageUrl: currentSong!.artwork!,
+                            imageUrl: currentSong.artwork ?? '',
                             fit: BoxFit.cover,
                             height: MediaQuery.sizeOf(context).height / 2.5,
                             width: MediaQuery.sizeOf(context).width / 1.2,
-                            errorWidget: (context, url, error) => Container(
-                              color: const Color.fromARGB(225, 160, 160, 160),
-                              child: const Center(
-                                child: Icon(
-                                  Icons.music_note,
-                                  size: 110,
-                                  color: Colors.white,
+                            errorWidget: (context, url, error) {
+                              return Container(
+                                color: const Color.fromARGB(225, 160, 160, 160),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.music_note,
+                                    size: 110,
+                                    color: Colors.white,
+                                  ),
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ),
                       ),
@@ -171,6 +206,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                   ),
 
                   const SizedBox(height: 20),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -179,32 +215,31 @@ class _PlayerScreenState extends State<PlayerScreen>
                         children: [
                           Text(
                             currentSong.title.length > 13
-                                ? currentSong.title.substring(0, 13) + "..."
+                                ? "${currentSong.title.substring(0, 13)}..."
                                 : currentSong.title,
                             maxLines: 1,
                             overflow: TextOverflow.fade,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.auto_awesome_rounded,
-                                color: const Color.fromARGB(255, 94, 209, 98),
+                                color: Color.fromARGB(255, 94, 209, 98),
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 currentSong.artist.length > 20
-                                    ? currentSong.artist.substring(0, 20) +
-                                          "..."
+                                    ? "${currentSong.artist.substring(0, 20)}..."
                                     : currentSong.artist,
                                 maxLines: 1,
-
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.grey,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
@@ -214,23 +249,28 @@ class _PlayerScreenState extends State<PlayerScreen>
                           ),
                         ],
                       ),
+
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.close_rounded,
                             color: Colors.white,
                             size: 30,
                           ),
+
                           const SizedBox(width: 11),
 
                           GestureDetector(
                             onTap: () async {
                               log("Like the song pressed");
 
-                              if (!isLiked)
-                                await tracker.saveLikedSongs(widget.song);
-                              else
-                                await tracker.removeLikedSong(widget.song.id);
+                              if (!isLiked) {
+                                await tracker.saveLikedSongs(currentSong);
+                              } else {
+                                await tracker.removeLikedSong(currentSong.id);
+                              }
+
+                              if (!mounted) return;
 
                               setState(() {});
 
@@ -239,7 +279,6 @@ class _PlayerScreenState extends State<PlayerScreen>
                             child: isLiked
                                 ? Lottie.asset(
                                     'assets/animations/Done.json',
-
                                     width: 37.5,
                                     height: 37.5,
                                     repeat: false,
@@ -254,7 +293,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 23),
+
                   Column(
                     children: [
                       SizedBox(
@@ -263,7 +304,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                           stream: player.positionStream,
                           builder: (context, snapshot) {
                             final position = snapshot.data ?? Duration.zero;
+
                             final duration = player.duration ?? Duration.zero;
+
                             return Column(
                               children: [
                                 SliderTheme(
@@ -276,12 +319,10 @@ class _PlayerScreenState extends State<PlayerScreen>
                                     inactiveTrackColor: Colors.grey,
                                     activeTrackColor: Colors.white,
                                     trackHeight: 1.5,
-
                                     thumbShape: const RoundSliderThumbShape(
                                       enabledThumbRadius: 5,
                                     ),
                                   ),
-
                                   child: Slider(
                                     min: 0,
                                     max: duration.inSeconds.toDouble(),
@@ -308,7 +349,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                     children: [
                                       Text(
                                         FormatDuration(position),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
@@ -316,7 +357,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                                       ),
                                       Text(
                                         FormatDuration(duration),
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 12,
@@ -332,7 +373,9 @@ class _PlayerScreenState extends State<PlayerScreen>
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 22),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -364,7 +407,7 @@ class _PlayerScreenState extends State<PlayerScreen>
                             );
                           }
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.install_mobile,
                           size: 28,
                           color: Colors.white,
@@ -377,12 +420,13 @@ class _PlayerScreenState extends State<PlayerScreen>
                             onTap: () async {
                               await tracker.playPreviousInQueue();
                             },
-                            child: Icon(
+                            child: const Icon(
                               Icons.skip_previous_rounded,
                               size: 45,
                               color: Colors.white,
                             ),
                           ),
+
                           const SizedBox(width: 10),
 
                           GestureDetector(
@@ -403,11 +447,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                           ),
 
                           const SizedBox(width: 10),
+
                           GestureDetector(
                             onTap: () async {
                               await tracker.playNextInQueue();
                             },
-                            child: Icon(
+                            child: const Icon(
                               Icons.skip_next_rounded,
                               size: 45,
                               color: Colors.white,
@@ -415,7 +460,12 @@ class _PlayerScreenState extends State<PlayerScreen>
                           ),
                         ],
                       ),
-                      Icon(Icons.timer_outlined, size: 28, color: Colors.white),
+
+                      const Icon(
+                        Icons.timer_outlined,
+                        size: 28,
+                        color: Colors.white,
+                      ),
                     ],
                   ),
                 ],

@@ -29,13 +29,17 @@ class MiniPlayer extends StatefulWidget {
 class _MiniPlayerState extends State<MiniPlayer> {
   Color backgroundColor = const Color(0xFF212121);
 
+  int _paletteRequestId = 0;
+
   Future<void> getBackgroundColor(String? artwork) async {
+    final requestId = ++_paletteRequestId;
+
     if (artwork == null || artwork.isEmpty) return;
 
     try {
       final palette = await PaletteGenerator.fromImageProvider(
-        NetworkImage(artwork),
-        maximumColorCount: 24,
+        CachedNetworkImageProvider(artwork),
+        maximumColorCount: 8,
       );
 
       final selectedColor =
@@ -45,13 +49,15 @@ class _MiniPlayerState extends State<MiniPlayer> {
           palette.dominantColor?.color ??
           const Color(0xFF191414);
 
-      if (!mounted) return;
+      if (!mounted || requestId != _paletteRequestId) return;
 
       setState(() {
         backgroundColor = selectedColor;
       });
     } catch (e) {
-      if (!mounted) return;
+      log("Palette error: $e");
+
+      if (!mounted || requestId != _paletteRequestId) return;
 
       setState(() {
         backgroundColor = const Color(0xFF191414);
@@ -61,9 +67,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     getBackgroundColor(widget.song.artwork);
   }
 
@@ -72,7 +76,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.song.id != widget.song.id) {
-      getBackgroundColor(context.read<TrackProvider>().currentSong!.artwork);
+      getBackgroundColor(widget.song.artwork);
     }
   }
 
@@ -89,8 +93,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
             pageBuilder: (context, animation, secondaryAnimation) {
               return PlayerScreen(song: widget.song);
             },
-            transitionDuration: const Duration(milliseconds: 450),
-            reverseTransitionDuration: const Duration(milliseconds: 380),
+            transitionDuration: const Duration(milliseconds: 300),
+            reverseTransitionDuration: const Duration(milliseconds: 250),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
                   const begin = Offset(0.0, 1.0);
@@ -111,9 +115,10 @@ class _MiniPlayerState extends State<MiniPlayer> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 3.0),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 10),
-          curve: Curves.easeInOut,
+        // child: AnimatedContainer(
+        //   duration: const Duration(milliseconds: 10),
+        //   curve: Curves.easeInOut,
+        child: Container(
           height: MediaQuery.sizeOf(context).height / 14.4,
           width: MediaQuery.sizeOf(context).width / 1.07,
           decoration: BoxDecoration(
