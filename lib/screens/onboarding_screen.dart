@@ -23,7 +23,7 @@ class OnboardingScreen extends StatelessWidget {
                   SizedBox(
                     height: 180,
                     width: 180,
-                    child: Image.asset('assets/icons/mfy-logo.png'),
+                    child: Image.asset('assets/icons/mfy-logo-removebg.png'),
                   ),
                   Text(
                     "Millions of songs.",

@@ -26,9 +26,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
       if (!context.mounted) return;
 
-      // Navigate to login screen
-      Navigator.pushAndRemoveUntil(
-        context,
+      // Navigate to onboarding using ROOT Navigator
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const OnboardingScreen()),
         (route) => false,
       );
@@ -72,7 +71,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 50),
+          const SizedBox(height: 120),
         ],
       ),
     );
