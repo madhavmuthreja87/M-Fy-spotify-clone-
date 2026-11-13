@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/screens/recents_in_drawer.dart';
 import 'package:sf/screens/settings_screen.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -86,7 +87,10 @@ class CustomDrawer extends StatelessWidget {
             ),
 
             _drawerItem(context, Icons.timer_sharp, 'Recents', () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => RecentsInDrawer()),
+              );
               // Navigate to SearchScreen
             }),
 
