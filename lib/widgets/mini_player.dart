@@ -233,7 +233,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                             thumbColor: Colors.white,
                             inactiveTrackColor: Colors.grey,
                             activeTrackColor: Colors.white,
-                            trackHeight: 1.6,
+                            trackHeight: 0.015,
 
                             thumbShape: const RoundSliderThumbShape(
                               enabledThumbRadius: 0,

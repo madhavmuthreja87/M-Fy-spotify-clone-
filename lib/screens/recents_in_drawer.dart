@@ -91,18 +91,18 @@ class _RecentsInDrawerState extends State<RecentsInDrawer> {
 
   String _monthName(int month) {
     const months = [
-      'January',
-      'February',
+      'Jan',
+      'Feb',
       'March',
       'April',
       'May',
       'June',
       'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      'Aug',
+      'Sept',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
 
     return months[month - 1];
@@ -147,11 +147,11 @@ class _RecentsInDrawerState extends State<RecentsInDrawer> {
                         ),
                       ),
                       SizedBox(height: 8),
-                      Text(
-                        'Search for artists, songs, playlists, podcasts and more.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey, fontSize: 15.5),
-                      ),
+                      // Text(
+                      //   'Search for artists, songs, playlists, podcasts and more.',
+                      //   textAlign: TextAlign.center,
+                      //   style: TextStyle(color: Colors.grey, fontSize: 15.5),
+                      // ),
                     ],
                   ),
                 ),
@@ -303,19 +303,14 @@ class _RecentsInDrawerState extends State<RecentsInDrawer> {
                                         ),
                                       ),
                                       trailing: Icon(
-                                        isLiked
-                                            ? Icons.favorite
-                                            : Icons
-                                                  .arrow_drop_down_circle_outlined,
+                                        Icons.arrow_drop_down_circle_outlined,
                                         size: 18,
-                                        color: isLiked
-                                            ? Colors.green
-                                            : const Color.fromARGB(
-                                                255,
-                                                186,
-                                                185,
-                                                185,
-                                              ),
+                                        color: const Color.fromARGB(
+                                          255,
+                                          186,
+                                          185,
+                                          185,
+                                        ),
                                       ),
                                     ),
                                   ),
