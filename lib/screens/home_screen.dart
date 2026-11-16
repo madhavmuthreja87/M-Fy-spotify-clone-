@@ -89,6 +89,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final trendingSongs = tracker.trendingSongs();
 
     return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFF121212),
       drawer: CustomDrawer(),
       appBar: AppBar(
@@ -137,192 +139,112 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 12, top: 6, bottom: 6),
+      body: Padding(
+        padding: const EdgeInsets.only(left: 12, top: 6, bottom: 6),
 
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
 
-                // HOME SONG GRID
-                Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+              // HOME SONG GRID
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
 
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
+                child: GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
 
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 8,
-                          crossAxisSpacing: 8,
-                          childAspectRatio: 3.37,
-                        ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    childAspectRatio: 3.37,
+                  ),
 
-                    itemCount: displayedSongs.length + 1,
+                  itemCount: displayedSongs.length + 1,
 
-                    itemBuilder: (context, index) {
-                      // LIKED SONGS TILE
-                      if (index == displayedSongs.length) {
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                pageBuilder: (
-                                  context,
-                                  animation,
-                                  secondaryAnimation,
-                                ) => const LikedSongs(),
-
-                                transitionsBuilder:
-                                    (
-                                      context,
-                                      animation,
-                                      secondaryAnimation,
-                                      child,
-                                    ) {
-                                      final curvedAnimation = CurvedAnimation(
-                                        parent: animation,
-                                        curve: Curves.easeInQuad,
-                                      );
-
-                                      return FadeTransition(
-                                        opacity: curvedAnimation,
-
-                                        child: ScaleTransition(
-                                          scale: Tween<double>(
-                                            begin: 0.95,
-                                            end: 1.0,
-                                          ).animate(curvedAnimation),
-
-                                          child: child,
-                                        ),
-                                      );
-                                    },
-                              ),
-                            );
-                          },
-
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(81, 116, 114, 114),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-
-                            child: Row(
-                              children: [
-                                Container(
-                                  height: 55,
-                                  width: 50,
-
-                                  decoration: BoxDecoration(
-                                    gradient: const LinearGradient(
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                      colors: [Colors.deepPurple, Colors.white],
-                                    ),
-
-                                    borderRadius: BorderRadius.circular(5),
-                                  ),
-
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.favorite,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-
-                                const SizedBox(width: 8),
-
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 12),
-                                  child: Text(
-                                    "Liked Songs",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }
-
-                      // SONG DATA
-                      final TrackModel song = displayedSongs[index];
-
+                  itemBuilder: (context, index) {
+                    // LIKED SONGS TILE
+                    if (index == displayedSongs.length) {
                       return GestureDetector(
                         onTap: () {
-                          log(
-                            showMostPlayed
-                                ? "Most played song pressed"
-                                : "Personalised song pressed",
-                          );
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (
+                                context,
+                                animation,
+                                secondaryAnimation,
+                              ) => const LikedSongs(),
 
-                          context.read<TrackProvider>().setSongAndPlay(song);
+                              transitionsBuilder:
+                                  (
+                                    context,
+                                    animation,
+                                    secondaryAnimation,
+                                    child,
+                                  ) {
+                                    final curvedAnimation = CurvedAnimation(
+                                      parent: animation,
+                                      curve: Curves.easeInQuad,
+                                    );
+
+                                    return FadeTransition(
+                                      opacity: curvedAnimation,
+
+                                      child: ScaleTransition(
+                                        scale: Tween<double>(
+                                          begin: 0.95,
+                                          end: 1.0,
+                                        ).animate(curvedAnimation),
+
+                                        child: child,
+                                      ),
+                                    );
+                                  },
+                            ),
+                          );
                         },
 
                         child: Container(
                           decoration: BoxDecoration(
                             color: const Color.fromARGB(81, 116, 114, 114),
-                            borderRadius: BorderRadius.circular(4),
+                            borderRadius: BorderRadius.circular(5),
                           ),
 
                           child: Row(
                             children: [
-                              // SONG IMAGE
+                              Container(
+                                height: 55,
+                                width: 50,
 
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(5),
-                                child: SizedBox(
-                                  width: 51,
-                                  height: 51,
-                                  child: Transform.scale(
-                                    scale: 1.2,
-                                    child: CachedNetworkImage(
-                                      imageUrl: song.artwork ?? '',
-                                      width: 150,
-                                      height: 150,
-                                      fit: BoxFit.cover,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: [Colors.deepPurple, Colors.white],
+                                  ),
 
-                                      errorWidget: (context, url, error) =>
-                                          Container(
-                                            color: const Color.fromARGB(
-                                              225,
-                                              160,
-                                              160,
-                                              160,
-                                            ),
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
 
-                                            child: const Center(
-                                              child: Icon(
-                                                Icons.music_note,
-                                                color: Colors.white,
-                                              ),
-                                            ),
-                                          ),
-                                    ),
+                                child: const Center(
+                                  child: Icon(
+                                    Icons.favorite,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
+
                               const SizedBox(width: 8),
 
-                              // SONG TITLE
-                              Expanded(
+                              const Padding(
+                                padding: EdgeInsets.only(right: 12),
                                 child: Text(
-                                  song.title,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-
-                                  style: const TextStyle(
+                                  "Liked Songs",
+                                  style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w600,
                                   ),
@@ -332,124 +254,94 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       );
-                    },
-                  ),
-                ),
+                    }
 
-                const SizedBox(height: 30),
+                    // SONG DATA
+                    final TrackModel song = displayedSongs[index];
 
-                // JUST BACK IN
-                if (justBackIn.length > 2) ...[
-                  const Text(
-                    "Just back in",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 21,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
+                    return GestureDetector(
+                      onTap: () {
+                        log(
+                          showMostPlayed
+                              ? "Most played song pressed"
+                              : "Personalised song pressed",
+                        );
 
-                  SizedBox(
-                    height: MediaQuery.sizeOf(context).height / 3.8,
+                        context.read<TrackProvider>().setSongAndPlay(song);
+                      },
 
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: justBackIn.length,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(81, 116, 114, 114),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
 
-                      itemBuilder: (context, index) {
-                        final element = justBackIn[index];
-                        final song = trackFromMap(element);
+                        child: Row(
+                          children: [
+                            // SONG IMAGE
 
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 15, top: 6),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(5),
+                              child: SizedBox(
+                                width: 51,
+                                height: 51,
+                                child: Transform.scale(
+                                  scale: 1.2,
+                                  child: CachedNetworkImage(
+                                    imageUrl: song.artwork ?? '',
+                                    width: 150,
+                                    height: 150,
+                                    fit: BoxFit.cover,
 
-                          child: GestureDetector(
-                            onTap: () {
-                              context.read<TrackProvider>().setSongAndPlay(
-                                song,
-                              );
-                            },
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                          color: const Color.fromARGB(
+                                            225,
+                                            160,
+                                            160,
+                                            160,
+                                          ),
 
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Colors.transparent,
-                              ),
-
-                              height: MediaQuery.sizeOf(context).height / 3.8,
-
-                              width: MediaQuery.sizeOf(context).width / 2.5,
-
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-
-                                    child: Container(
-                                      color: const Color.fromARGB(
-                                        225,
-                                        160,
-                                        160,
-                                        160,
-                                      ),
-
-                                      height: 150,
-                                      width: double.infinity,
-
-                                      child: CachedNetworkImage(
-                                        imageUrl: song.artwork ?? '',
-                                        fit: BoxFit.cover,
-
-                                        errorWidget: (context, url, error) =>
-                                            const Center(
-                                              child: Icon(
-                                                Icons.music_note,
-                                                color: Colors.white,
-                                                size: 44,
-                                              ),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.music_note,
+                                              color: Colors.white,
                                             ),
-                                      ),
-                                    ),
+                                          ),
+                                        ),
                                   ),
-
-                                  const SizedBox(height: 10),
-
-                                  const Text(
-                                    "Song",
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    song.title,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                            const SizedBox(width: 8),
 
-                const SizedBox(height: 30),
+                            // SONG TITLE
+                            Expanded(
+                              child: Text(
+                                song.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
 
-                // RECOMMENDED FOR TODAY
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              // JUST BACK IN
+              if (justBackIn.length > 2) ...[
                 const Text(
-                  "Recommended for today",
+                  "Just back in",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 21,
@@ -457,26 +349,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 2),
-
                 SizedBox(
                   height: MediaQuery.sizeOf(context).height / 3.8,
 
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: trendingSongs.length,
+                    itemCount: justBackIn.length,
 
                     itemBuilder: (context, index) {
-                      final TrackModel element = trendingSongs[index];
+                      final element = justBackIn[index];
+                      final song = trackFromMap(element);
 
                       return Padding(
                         padding: const EdgeInsets.only(right: 15, top: 6),
 
                         child: GestureDetector(
                           onTap: () {
-                            context.read<TrackProvider>().setSongAndPlay(
-                              element,
-                            );
+                            context.read<TrackProvider>().setSongAndPlay(song);
                           },
 
                           child: Container(
@@ -508,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     width: double.infinity,
 
                                     child: CachedNetworkImage(
-                                      imageUrl: element.artwork ?? '',
+                                      imageUrl: song.artwork ?? '',
                                       fit: BoxFit.cover,
 
                                       errorWidget: (context, url, error) =>
@@ -534,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
 
                                 Text(
-                                  element.title,
+                                  song.title,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
 
@@ -552,12 +441,118 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-
-                const SizedBox(height: 100),
-
-                const Text("Hello", style: TextStyle(color: Colors.white)),
               ],
-            ),
+
+              const SizedBox(height: 30),
+
+              // RECOMMENDED FOR TODAY
+              const Text(
+                "Recommended for today",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 2),
+
+              SizedBox(
+                height: MediaQuery.sizeOf(context).height / 3.8,
+
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: trendingSongs.length,
+
+                  itemBuilder: (context, index) {
+                    final TrackModel element = trendingSongs[index];
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 15, top: 6),
+
+                      child: GestureDetector(
+                        onTap: () {
+                          context.read<TrackProvider>().setSongAndPlay(element);
+                        },
+
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.transparent,
+                          ),
+
+                          height: MediaQuery.sizeOf(context).height / 3.8,
+
+                          width: MediaQuery.sizeOf(context).width / 2.5,
+
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+
+                                child: Container(
+                                  color: const Color.fromARGB(
+                                    225,
+                                    160,
+                                    160,
+                                    160,
+                                  ),
+
+                                  height: 150,
+                                  width: double.infinity,
+
+                                  child: CachedNetworkImage(
+                                    imageUrl: element.artwork ?? '',
+                                    fit: BoxFit.cover,
+
+                                    errorWidget: (context, url, error) =>
+                                        const Center(
+                                          child: Icon(
+                                            Icons.music_note,
+                                            color: Colors.white,
+                                            size: 44,
+                                          ),
+                                        ),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(height: 10),
+
+                              const Text(
+                                "Song",
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+
+                              Text(
+                                element.title,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 100),
+
+              const Text("Hello", style: TextStyle(color: Colors.white)),
+            ],
           ),
         ),
       ),
