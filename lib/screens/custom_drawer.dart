@@ -23,58 +23,82 @@ class CustomDrawer extends StatelessWidget {
           children: [
             // PROFILE HEADER
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 22, 16, 10),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 26,
-                    backgroundColor: const Color.fromARGB(255, 236, 175, 85),
-                    child: Text(
-                      displayName[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 29,
-                        fontWeight: FontWeight.bold,
+              padding: const EdgeInsets.fromLTRB(8, 22, 8, 10),
+              child: Container(
+                height: MediaQuery.sizeOf(context).height / 6.3,
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(25, 158, 158, 158),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                radius: 26,
+                                backgroundColor: const Color.fromARGB(
+                                  255,
+                                  236,
+                                  175,
+                                  85,
+                                ),
+                                child: Text(
+                                  displayName[0].toUpperCase(),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 29,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 14),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  const SizedBox(width: 14),
+                                  Text(
+                                    displayName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+
+                                  // Text(
+                                  //   user.email,
+                                  //   style: const TextStyle(
+                                  //     color: Colors.grey,
+                                  //     fontSize: 12,
+                                  //   ),
+                                  // ),
+                                  const Text(
+                                    'View profile',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          const Icon(Icons.chevron_right, color: Colors.white),
+                        ],
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(width: 14),
-
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          displayName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 19,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-
-                        // Text(
-                        //   user.email,
-                        //   style: const TextStyle(
-                        //     color: Colors.grey,
-                        //     fontSize: 12,
-                        //   ),
-                        // ),
-                        const Text(
-                          'View profile',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Icon(Icons.chevron_right, color: Colors.white),
-                ],
+                ),
               ),
             ),
 
@@ -128,7 +152,7 @@ class CustomDrawer extends StatelessWidget {
     VoidCallback onTap,
   ) {
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 22),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 22, vertical: 4),
       leading: Icon(icon, color: Colors.white, size: 23),
       title: Text(
         title,
