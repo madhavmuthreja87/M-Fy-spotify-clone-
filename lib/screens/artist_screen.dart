@@ -83,102 +83,172 @@ class _ArtistScreenState extends State<ArtistScreen> {
       extendBodyBehindAppBar: true,
 
       backgroundColor: const Color(0xFF121212),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
 
-        children: [
-          Container(
-            height: MediaQuery.sizeOf(context).height * 0.30,
-            width: double.infinity,
-            color: Colors.green,
-          ),
-          SizedBox(height: 8),
-          Container(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 4),
-                  Text(
-                    "8M monthly listeners",
-                    style: TextStyle(color: Colors.grey),
+          children: [
+            Stack(
+              children: [
+                Container(
+                  height: MediaQuery.sizeOf(context).height * 0.333,
+                  width: double.infinity,
+                  color: Colors.green,
+                ),
+                Positioned(
+                  top: 35,
+                  left: 13,
+                  child: IconButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      shape: const CircleBorder(),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(Icons.arrow_back, size: 24, color: Colors.white),
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                Positioned(
+                  top: 35,
+                  right: 13,
+                  child: IconButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black.withOpacity(0.5),
+                      shape: const CircleBorder(),
+                    ),
+                    onPressed: () {},
+                    icon: Icon(
+                      Icons.more_vert_rounded,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 15,
+                  left: 19,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Icon(Icons.read_more),
-                          SizedBox(width: 6),
-                          OutlinedButton(
-                            onPressed: () {},
-                            child: Text(
-                              "Following",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ],
+                      Text(
+                        widget.artistname,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-
+                      SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.shuffle, color: Colors.green, size: 40),
-                          SizedBox(width: 8),
                           Icon(
-                            Icons.play_circle,
-                            color: Colors.green,
-                            size: 44,
+                            Icons.verified,
+                            size: 20,
+                            color: const Color.fromARGB(255, 90, 201, 93),
+                          ),
+                          SizedBox(width: 3),
+                          Text(
+                            "Verified by M-Fy",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: const Color.fromARGB(255, 54, 53, 53),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Container(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 4),
+                    Text(
+                      "8M monthly listeners",
+                      style: TextStyle(color: Colors.grey),
                     ),
-
-                    child: Row(
+                    SizedBox(height: 10),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.new_label),
-                            SizedBox(width: 7),
-                            Text(
-                              "Listen to new track",
-                              style: TextStyle(fontWeight: FontWeight.w700),
+                            Icon(Icons.read_more),
+                            SizedBox(width: 6),
+                            OutlinedButton(
+                              onPressed: () {},
+                              child: Text(
+                                "Following",
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
                           ],
                         ),
 
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          color: Colors.white,
+                        Row(
+                          children: [
+                            Icon(Icons.shuffle, color: Colors.green, size: 40),
+                            SizedBox(width: 8),
+                            Icon(
+                              Icons.play_circle,
+                              color: Colors.green,
+                              size: 44,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ),
-                  SizedBox(height: 14),
-                  Text(
-                    "Popular",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 19,
-                      fontWeight: FontWeight.w700,
+                    SizedBox(height: 8),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5),
+                        color: const Color.fromARGB(255, 54, 53, 53),
+                      ),
+
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(Icons.new_label),
+                              SizedBox(width: 7),
+                              Text(
+                                "Listen to new track",
+                                style: TextStyle(fontWeight: FontWeight.w700),
+                              ),
+                            ],
+                          ),
+
+                          Icon(
+                            Icons.arrow_forward_ios_rounded,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 19),
+                    Text(
+                      "Popular",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
+            ListView.builder(
+              shrinkWrap: true,
               padding: EdgeInsets.zero,
               physics: const BouncingScrollPhysics(),
               itemCount: searchResult.length,
@@ -299,9 +369,9 @@ class _ArtistScreenState extends State<ArtistScreen> {
                 );
               },
             ),
-          ),
-          SizedBox(height: 167),
-        ],
+            SizedBox(height: 167),
+          ],
+        ),
       ),
     );
   }
