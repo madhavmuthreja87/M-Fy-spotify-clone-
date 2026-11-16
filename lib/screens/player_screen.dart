@@ -440,10 +440,16 @@ class _PlayerScreenState extends State<PlayerScreen>
 
                           Row(
                             children: [
-                              const Icon(
-                                Icons.close_rounded,
-                                color: Colors.white,
-                                size: 30,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  context.read<TrackProvider>().removePlayer();
+                                },
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
                               ),
                               const SizedBox(width: 11),
 

@@ -252,6 +252,15 @@ class TrackProvider extends ChangeNotifier {
     await handler.stop();
   }
 
+  Future<void> removePlayer() async {
+    await handler.stop();
+
+    currentSong = null;
+    isPlaying = false;
+
+    notifyListeners();
+  }
+
   // --- REST UNCHANGED ---
   Future<void> restoreMusicDataFromCloud() async {
     final userRef = FirebaseFirestore.instance
