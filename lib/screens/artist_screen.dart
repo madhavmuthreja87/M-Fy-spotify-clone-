@@ -80,7 +80,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true,
 
       backgroundColor: const Color(0xFF121212),
       body: Column(
@@ -91,7 +91,6 @@ class _ArtistScreenState extends State<ArtistScreen> {
             height: MediaQuery.sizeOf(context).height * 0.30,
             width: double.infinity,
             color: Colors.green,
-            child: Text("dsf"),
           ),
           SizedBox(height: 8),
           Container(
@@ -301,6 +300,7 @@ class _ArtistScreenState extends State<ArtistScreen> {
               },
             ),
           ),
+          SizedBox(height: 167),
         ],
       ),
     );
