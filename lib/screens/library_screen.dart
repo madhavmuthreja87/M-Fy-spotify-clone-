@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sf/providers/sign_up_provider.dart';
+import 'package:sf/screens/artist_screen.dart';
 import 'package:sf/services/audis_api.dart';
 import 'package:sf/providers/track_provider.dart';
 import 'package:sf/screens/create_playlist.dart';
@@ -139,9 +140,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             child: Container(
                               child: Row(
                                 children: [
-                                  Icon(Icons.arrow_upward, color: Colors.white),
+                                  Icon(
+                                    Icons.arrow_upward,
+                                    size: 17,
+                                    color: Colors.white,
+                                  ),
                                   Icon(
                                     Icons.arrow_downward,
+                                    size: 17,
                                     color: Colors.white,
                                   ),
                                 ],
@@ -158,7 +164,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                           ),
                         ],
                       ),
-                      Icon(Icons.grid_view, color: Colors.white),
+                      Icon(Icons.grid_view, color: Colors.white, size: 20),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -328,28 +334,46 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         itemBuilder: (context, index) {
                           final artistElement = artists[index];
 
-                          return ListTile(
-                            onTap: ()
-                            {
-                              
-                            },
-                            contentPadding: EdgeInsets.zero,
-                            hoverColor: Colors.green,
-                            leading: const CircleAvatar(
-                              radius: 25,
-                              child: Icon(Icons.person_3),
-                            ),
-                            title: Text(
-                              artistElement['name'] ?? '',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
+                          return GestureDetector(
+                            onTap: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ArtistScreen(
+                                    artistname: artistElement['name'],
+                                  ),
+                                ),
                               ),
-                            ),
-                            subtitle: const Text(
-                              "Artist",
-                              style: TextStyle(
-                                color: Color.fromARGB(255, 159, 159, 159),
+                            },
+                            child: ListTile(
+                              // onTap: () {
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) => ArtistScreen(
+                              //         artistname: artistElement['name'],
+                              //       ),
+                              //     ),
+                              //   );
+                              // },
+                              contentPadding: EdgeInsets.zero,
+                              hoverColor: Colors.green,
+                              leading: const CircleAvatar(
+                                radius: 25,
+                                child: Icon(Icons.person_3),
+                              ),
+                              title: Text(
+                                artistElement['name'] ?? '',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              subtitle: const Text(
+                                "Artist",
+                                style: TextStyle(
+                                  color: Color.fromARGB(255, 159, 159, 159),
+                                ),
                               ),
                             ),
                           );
