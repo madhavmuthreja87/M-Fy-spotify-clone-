@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sf/screens/custom_drawer.dart';
 import 'package:sf/services/audis_api.dart';
 import 'package:sf/providers/track_provider.dart';
 import 'package:sf/screens/recents_screen.dart';
@@ -29,6 +30,56 @@ class _SearchScreenState extends State<SearchScreen> {
     final latestSongs = tracker.LatestSongs();
 
     return Scaffold(
+      drawer: CustomDrawer(),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF121212),
+        titleSpacing: 0,
+
+        title: Row(
+          children: [
+            // PROFILE ICON - OPENS DRAWER
+            Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: CircleAvatar(
+                    backgroundColor: const Color.fromARGB(255, 237, 175, 80),
+
+                    child: Text(
+                      // widget.name.isNotEmpty
+                      //     ? widget.name[0].toUpperCase()
+                      "M",
+                      // : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 10),
+            Text(
+              "Search",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Icon(Icons.camera_enhance_rounded, color: Colors.white, size: 29),
+          SizedBox(width: 12),
+        ],
+      ),
       backgroundColor: const Color(0xFF121212),
       body: Container(
         child: SafeArea(
@@ -38,36 +89,36 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        child: Text("M"),
-                        backgroundColor: Colors.orange,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Search",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 25,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
+                  // Row(
+                  //   children: [
+                  //     CircleAvatar(
+                  //       child: Text("M"),
+                  //       backgroundColor: Colors.orange,
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Text(
+                  //             "Search",
+                  //             style: TextStyle(
+                  //               color: Colors.white,
+                  //               fontSize: 25,
+                  //               fontWeight: FontWeight.w800,
+                  //             ),
+                  //           ),
 
-                            Icon(
-                              Icons.camera_enhance_outlined,
-                              color: Colors.white,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 28),
+                  //           Icon(
+                  //             Icons.camera_enhance_outlined,
+                  //             color: Colors.white,
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
+                  const SizedBox(height: 12),
                   GestureDetector(
                     onTap: () => {
                       Navigator.push(
@@ -90,7 +141,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       padding: EdgeInsets.symmetric(
                         horizontal: 10,
-                        vertical: 15,
+                        vertical: 12,
                       ),
                       child: Row(
                         children: [
@@ -104,7 +155,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: const Color.fromARGB(255, 109, 109, 109),
+                              color: const Color.fromARGB(255, 74, 74, 74),
                               fontSize: 15,
                             ),
                           ),
