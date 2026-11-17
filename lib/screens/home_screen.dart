@@ -336,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              //const SizedBox(height: 30),
 
               // JUST BACK IN
               if (justBackIn.length > 2) ...[

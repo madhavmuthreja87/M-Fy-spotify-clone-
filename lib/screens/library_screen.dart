@@ -24,6 +24,56 @@ class _LibraryScreenState extends State<LibraryScreen> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: const Color(0xFF121212),
+
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: const Color(0xFF121212),
+        titleSpacing: 0,
+
+        title: Row(
+          children: [
+            // PROFILE ICON - OPENS DRAWER
+            Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openDrawer();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: CircleAvatar(
+                    backgroundColor: const Color.fromARGB(255, 237, 175, 80),
+
+                    child: Text(
+                      // widget.name.isNotEmpty
+                      //     ? widget.name[0].toUpperCase()
+                      "M",
+                      // : '?',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 10),
+            Text(
+              "Your Library",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 25,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Icon(Icons.camera_enhance_rounded, color: Colors.white, size: 29),
+          SizedBox(width: 12),
+        ],
+      ),
       body: Container(
         child: SafeArea(
           child: Padding(
@@ -32,56 +82,56 @@ class _LibraryScreenState extends State<LibraryScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        child: Text("M"),
-                        backgroundColor: Colors.orange,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Your Library",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 25,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Icon(
-                                  size: 32,
-                                  Icons.search_outlined,
-                                  color: Colors.white,
-                                ),
-                                const SizedBox(width: 10),
-                                GestureDetector(
-                                  onTap: () => {
-                                    log("create playlist icon tapped"),
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => CreatePlaylist(),
-                                      ),
-                                    ),
-                                  },
-                                  child: Icon(
-                                    size: 40,
-                                    Icons.add_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     CircleAvatar(
+                  //       child: Text("M"),
+                  //       backgroundColor: Colors.orange,
+                  //     ),
+                  //     const SizedBox(width: 12),
+                  //     Expanded(
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Text(
+                  //             "Your Library",
+                  //             style: TextStyle(
+                  //               color: Colors.white,
+                  //               fontSize: 25,
+                  //               fontWeight: FontWeight.w800,
+                  //             ),
+                  //           ),
+                  //           Row(
+                  //             children: [
+                  //               Icon(
+                  //                 size: 32,
+                  //                 Icons.search_outlined,
+                  //                 color: Colors.white,
+                  //               ),
+                  //               const SizedBox(width: 10),
+                  //               GestureDetector(
+                  //                 onTap: () => {
+                  //                   log("create playlist icon tapped"),
+                  //                   Navigator.push(
+                  //                     context,
+                  //                     MaterialPageRoute(
+                  //                       builder: (context) => CreatePlaylist(),
+                  //                     ),
+                  //                   ),
+                  //                 },
+                  //                 child: Icon(
+                  //                   size: 40,
+                  //                   Icons.add_rounded,
+                  //                   color: Colors.white,
+                  //                 ),
+                  //               ),
+                  //             ],
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                   const SizedBox(height: 15),
                   Row(
                     children: [
