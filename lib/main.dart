@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:sf/providers/auth_provider.dart';
 import 'package:sf/providers/sign_up_provider.dart';
 import 'package:sf/screens/Sign_Up/sign_up_1_screen.dart';
@@ -32,6 +33,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
   // Flutter framework errors
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
