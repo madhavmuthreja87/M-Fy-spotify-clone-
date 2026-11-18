@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sf/providers/sign_up_provider.dart';
@@ -446,6 +447,12 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 30),
 
               // RECOMMENDED FOR TODAY
+              ElevatedButton(
+                onPressed: () {
+                  FirebaseCrashlytics.instance.crash();
+                },
+                child: Text("Crash "),
+              ),
               const Text(
                 "Recommended for today",
                 style: TextStyle(
