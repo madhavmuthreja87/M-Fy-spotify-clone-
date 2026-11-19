@@ -69,7 +69,7 @@ dependencies:
   cloud_firestore: 
   firebase_crashlytics: 
   firebase_performance: 
-  
+  firebase_analytics: 
  
   
 
